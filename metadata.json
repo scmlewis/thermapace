@@ -1,0 +1,6 @@
+{
+  "name": "ThermaPace VDOT",
+  "description": "Dynamic VDOT athletic pace calculator with advanced thermal degradation modeling for temperature, humidity, and dew point weather adjustments.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

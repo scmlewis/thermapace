@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThermaPace VDOT • Thermal Athletic Performance Engine</title>
+  
+  <!-- Inline PWA Manifest Definition -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"ThermaPace VDOT","short_name":"ThermaPace","start_url":".","display":"standalone","background_color":"#0A0E1A","theme_color":"#06B6D4","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3062/3062634.png","sizes":"512x512","type":"image/png"}]}'>
+  <meta name="theme-color" content="#0A0E1A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Inter, JetBrains Mono & Outfit Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            brand: {
+              dark: '#0A0E1A',
+              panel: '#121B2E',
+              panelLight: '#1B2640',
+              accent: '#06B6D4', // Glowing Electric Cyan
+              accentHover: '#22D3EE',
+              amberAccent: '#F97316',
+              roseAccent: '#F43F5E',
+              emeraldAccent: '#10B981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- D3.js for Charting -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+  <style>
+    /* Premium dark style improvements */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: #1E293B;
+      height: 6px;
+      border-radius: 3px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -5px;
+      background-color: #06B6D4;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+      transition: all 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background-color: #22D3EE;
+      transform: scale(1.1);
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.6);
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0A0E1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Seamless animations & glass effect class */
+    .glass-panel {
+      background: rgba(18, 27, 46, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Webkit Autocomplete fix */
+    input:-webkit-autofill {
+      -webkit-text-fill-color: #ffffff !important;
+      -webkit-box-shadow: 0 0 0px 1000px #1E293B inset !important;
+    }
+
+    /* Subtle fade-in animation for table rows on recalculation */
+    @keyframes update-fade {
+      0% {
+        opacity: 0.1;
+        transform: translateY(2px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-update {
+      animation: update-fade 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-accent/30 selection:text-white">
+
+  <!-- Top Navigation / Application Header -->
+  <header class="bg-brand-panel/95 backdrop-blur-md text-white border-b border-slate-800/80 sticky top-0 z-50 px-4 sm:px-6 py-3.5 shadow-xl">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-brand-accent rounded flex items-center justify-center font-black italic text-lg shadow-lg shadow-brand-accent/20 text-brand-dark shrink-0">
+          TP
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-black text-white tracking-tight uppercase">
+            ThermaPace VDOT
+          </h1>
+          <p class="text-[9px] sm:text-[11px] text-slate-400 font-medium">
+            Thermal Pacing &amp; Physiological Performance Engine
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Dashboard -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-5 lg:p-6 pb-28 sm:pb-28 lg:pb-12 flex flex-col gap-6">
+
+    <!-- TAB 1 CONTENT: Config & Environment -->
+    <div id="tab-content-config" class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+      
+      <!-- LEFT PANEL: Inputs (Event Performance & Weather Factors) -->
+      <section class="lg:col-span-6 flex flex-col gap-6">
+        
+        <!-- Box 1: Performance Input / VDOT Calculator -->
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50">
+          <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-800/80">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i data-lucide="target" class="w-4 h-4 text-brand-accent"></i>
+              1. Performance Metric
+            </h2>
+            <span class="text-[10px] font-bold px-2.5 py-1 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 uppercase font-mono">VDOT Calculator</span>
+          </div>
+   
+          <div class="flex flex-col gap-5">
+            <!-- Distance Presets -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Distance Presets</label>
+              <div class="grid grid-cols-5 gap-1.5" id="distance-presets">
+                <button type="button" data-meters="1609.34" class="px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight hover:bg-slate-800 text-slate-200 transition border border-slate-700/40 cursor-pointer hover:border-slate-600/60">1M</button>
+                <button type="button" data-meters="5000" class="px-1.5 py-2.5 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition border-none shadow-md shadow-brand-accent/10 cursor-pointer">5K</button>
+                <button type="button" data-meters="10000" class="px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight hover:bg-slate-800 text-slate-200 transition border border-slate-700/40 cursor-pointer hover:border-slate-600/60">10K</button>
+                <button type="button" data-meters="21097.5" class="px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight hover:bg-slate-800 text-slate-200 transition border border-slate-700/40 cursor-pointer hover:border-slate-600/60">Half</button>
+                <button type="button" data-meters="42195" class="px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight hover:bg-slate-800 text-slate-200 transition border border-slate-700/40 cursor-pointer hover:border-slate-600/60">Full</button>
+              </div>
+            </div>
+   
+            <!-- Custom Distance Entry -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label for="custom-distance" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Custom Distance (m)</label>
+                <div class="relative rounded-lg shadow-inner">
+                  <input type="number" id="custom-distance" min="1" max="500000" value="5000" class="w-full pl-3 pr-8 py-2.5 text-sm font-bold font-mono rounded-lg bg-brand-panelLight border border-slate-700/60 text-white focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-brand-accent">
+                  <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-slate-400 font-bold font-mono">m</div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Equivalent Distance</label>
+                <div class="py-3 px-3.5 text-xs bg-slate-900/60 rounded-lg border border-slate-800/80 font-bold text-slate-400 font-mono" id="distance-helper">
+                  3.11 miles / 5.00 km
+                </div>
+              </div>
+            </div>
+   
+            <!-- Race Time Entry -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Race Performance Time (HH:MM:SS)</label>
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label for="time-hours" class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hours</label>
+                  <input type="number" id="time-hours" min="0" max="99" value="0" class="w-full text-center py-2.5 text-sm font-bold font-mono rounded-lg bg-brand-panelLight border border-slate-700/60 text-white focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                </div>
+                <div>
+                  <label for="time-minutes" class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Minutes</label>
+                  <input type="number" id="time-minutes" min="0" max="59" value="20" class="w-full text-center py-2.5 text-sm font-bold font-mono rounded-lg bg-brand-panelLight border border-slate-700/60 text-white focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                </div>
+                <div>
+                  <label for="time-seconds" class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Seconds</label>
+                  <input type="number" id="time-seconds" min="0" max="59" value="0" class="w-full text-center py-2.5 text-sm font-bold font-mono rounded-lg bg-brand-panelLight border border-slate-700/60 text-white focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 3: VDOT Scoring & equivalents -->
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50 flex flex-col gap-6">
+          
+          <!-- Large VDOT Score & Percentile Badge -->
+          <div class="flex flex-col sm:flex-row items-center gap-5 bg-slate-900/40 border border-slate-800/60 rounded-xl p-5 shadow-inner">
+            <div class="relative flex items-center justify-center w-24 h-24 bg-gradient-to-tr from-brand-accent to-blue-600 rounded-full shadow-lg shrink-0 shadow-brand-accent/20">
+              <div class="absolute inset-1.5 bg-brand-panel rounded-full flex flex-col items-center justify-center text-center">
+                <span class="text-3xl font-black text-brand-accent font-mono tracking-tighter" id="vdot-score">--</span>
+                <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase -mt-1">VDOT</span>
+              </div>
+            </div>
+            <div class="text-center sm:text-left flex-1">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-1.5 justify-center sm:justify-start">
+                <h2 class="text-lg font-black text-white tracking-tight">Physiological Profile</h2>
+                <span class="inline-block px-2.5 py-0.5 bg-brand-accent/10 text-brand-accent text-xs font-bold rounded-full border border-brand-accent/20 self-center uppercase font-mono" id="runner-level">Uncalculated</span>
+              </div>
+              <p class="text-xs text-slate-300 font-medium leading-relaxed" id="vdot-description">
+                Enter a race distance and duration to calculate your VDOT level. Your VDOT score represents your functional oxygen uptake capability ($VO_2$ Max) adjusted for running economy.
+              </p>
+            </div>
+          </div>
+
+          <!-- Equivalent Performances Panel -->
+          <div>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+              <i data-lucide="award" class="w-4 h-4 text-brand-accent"></i>
+              <span>Equivalent Race Performance Profiles</span>
+            </h3>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 transition duration-200 hover:border-slate-700/30 hover:bg-slate-900/60 shadow-inner">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">5K Preset</span>
+                <span class="block text-sm font-extrabold font-mono text-white mt-0.5" id="equiv-5k">--:--</span>
+                <span class="block text-[10px] font-bold text-brand-amberAccent mt-0.5 font-mono" id="equiv-5k-weather">Adj: --</span>
+              </div>
+              <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 transition duration-200 hover:border-slate-700/30 hover:bg-slate-900/60 shadow-inner">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">10K Preset</span>
+                <span class="block text-sm font-extrabold font-mono text-white mt-0.5" id="equiv-10k">--:--</span>
+                <span class="block text-[10px] font-bold text-brand-amberAccent mt-0.5 font-mono" id="equiv-10k-weather">Adj: --</span>
+              </div>
+              <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 transition duration-200 hover:border-slate-700/30 hover:bg-slate-900/60 shadow-inner">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Half Marathon</span>
+                <span class="block text-sm font-extrabold font-mono text-white mt-0.5" id="equiv-half">--:--</span>
+                <span class="block text-[10px] font-bold text-brand-amberAccent mt-0.5 font-mono" id="equiv-half-weather">Adj: --</span>
+              </div>
+              <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 transition duration-200 hover:border-slate-700/30 hover:bg-slate-900/60 shadow-inner">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Full Marathon</span>
+                <span class="block text-sm font-extrabold font-mono text-white mt-0.5" id="equiv-full">--:--</span>
+                <span class="block text-[10px] font-bold text-brand-amberAccent mt-0.5 font-mono" id="equiv-full-weather">Adj: --</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+   
+      <!-- RIGHT PANEL: Inputs (Thermal Engine) -->
+      <section class="lg:col-span-6 flex flex-col gap-6">
+        <!-- Box 2: Thermal degradation Engine / Weather Modifiers -->
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50">
+          <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-800/80">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i data-lucide="thermometer" class="w-4 h-4 text-brand-amberAccent"></i>
+              2. Thermal Engine
+            </h2>
+            <span class="text-[10px] font-bold px-2.5 py-1 bg-brand-amberAccent/10 text-brand-amberAccent rounded border border-brand-amberAccent/20 uppercase font-mono">Weather Modifiers</span>
+          </div>
+   
+          <div class="flex flex-col gap-5">
+            <!-- Weather Model Mode Toggle -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pacing Model Reference</label>
+              <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800/60" id="weather-model-toggle">
+                <button type="button" data-model="wiv" class="px-2 py-2 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition duration-150 cursor-pointer border-none">
+                  WIV (Temp+DewPt)
+                </button>
+                <button type="button" data-model="heat_index" class="px-2 py-2 text-center text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent">
+                  Heat Index (HI)
+                </button>
+              </div>
+            </div>
+
+            <!-- Smart Weather Sync -->
+            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 flex flex-col gap-2.5 shadow-inner">
+              <div class="flex items-center justify-between">
+                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Smart Weather Sync</span>
+                <span id="weather-status" class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wide">Ready</span>
+              </div>
+              <div class="flex gap-2">
+                <!-- Location Input -->
+                <div class="relative flex-1">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                  </span>
+                  <input type="text" id="weather-location-input" placeholder="Search City (e.g. Chamonix)" class="w-full pl-9 pr-3 py-2 text-xs font-bold rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-brand-accent transition">
+                </div>
+                <!-- Search Button -->
+                <button type="button" id="weather-search-btn" class="px-3 py-2 bg-brand-panelLight hover:bg-slate-800 border border-slate-700/60 text-slate-200 hover:text-white rounded-lg transition text-xs font-bold cursor-pointer flex items-center justify-center">
+                  Search
+                </button>
+                <!-- GPS Sync Button -->
+                <button type="button" id="weather-gps-btn" class="px-3 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg transition text-xs font-black cursor-pointer flex items-center gap-1.5" title="Get Current Location Weather">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                  <span class="hidden xs:inline">GPS</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Weather Presets -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Weather Presets</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="weather-presets">
+                <button type="button" data-temp="15" data-rh="50" class="px-3 py-2.5 text-left text-xs font-bold rounded-lg bg-brand-panelLight border border-brand-accent/20 text-brand-accent hover:bg-slate-800 transition flex items-center justify-between cursor-pointer">
+                  <span>Standard Baseline</span>
+                  <span class="font-mono text-[10px] opacity-90">15°C, 50%</span>
+                </button>
+                <button type="button" data-temp="30" data-rh="80" class="px-3 py-2.5 text-left text-xs font-bold rounded-lg bg-brand-panelLight border border-slate-700/50 text-slate-200 hover:bg-slate-800 transition flex items-center justify-between cursor-pointer">
+                  <span>Subtropical Humid</span>
+                  <span class="font-mono text-[10px] opacity-90">30°C, 80%</span>
+                </button>
+                <button type="button" data-temp="35" data-rh="20" class="px-3 py-2.5 text-left text-xs font-bold rounded-lg bg-brand-panelLight border border-slate-700/50 text-slate-200 hover:bg-slate-800 transition flex items-center justify-between cursor-pointer">
+                  <span>Desert Dry Heat</span>
+                  <span class="font-mono text-[10px] opacity-90">35°C, 20%</span>
+                </button>
+                <button type="button" data-temp="38" data-rh="85" class="px-3 py-2.5 text-left text-xs font-bold rounded-lg bg-brand-panelLight border border-slate-700/50 text-slate-200 hover:bg-slate-800 transition flex items-center justify-between cursor-pointer">
+                  <span>Extreme Oppressive</span>
+                  <span class="font-mono text-[10px] opacity-90">38°C, 85%</span>
+                </button>
+              </div>
+            </div>
+   
+            <!-- Ambient Temperature Slider -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between items-center">
+                <label for="temp-slider" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Ambient Temperature</label>
+                <span class="text-xs font-bold text-brand-accent font-mono" id="temp-display">15°C / 59°F</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">0°C</span>
+                <input type="range" id="temp-slider" min="0" max="50" value="15" class="flex-1">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">50°C</span>
+              </div>
+            </div>
+   
+            <!-- Relative Humidity Slider -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between items-center">
+                <label for="humidity-slider" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Relative Humidity</label>
+                <span class="text-xs font-bold text-brand-accent font-mono" id="humidity-display">50%</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">10%</span>
+                <input type="range" id="humidity-slider" min="10" max="100" value="50" class="flex-1">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">100%</span>
+              </div>
+            </div>
+            <!-- Calculated Ambient Indicators -->
+            <div class="bg-slate-900/50 border border-slate-800 rounded-lg p-3.5 grid grid-cols-2 gap-3.5 text-xs shadow-inner">
+              <div>
+                <span class="block text-slate-400 font-bold text-[10px] mb-1.5 uppercase tracking-wider">Calculated Dew Point</span>
+                <span class="font-extrabold font-mono text-white text-base" id="dew-point-val">--</span>
+                <span class="block text-[10px] font-bold text-brand-accent mt-1" id="dew-point-label">Ideal comfort</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-bold text-[10px] mb-1.5 uppercase tracking-wider" id="metric-title-indicator">Weather Impact Index</span>
+                <span class="font-extrabold font-mono text-white text-base" id="wiv-val">--</span>
+                <span class="block text-[10px] font-bold text-slate-500 mt-1" id="wiv-label">Ideal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 2 CONTENT: Pacing Grid & Chart -->
+    <div id="tab-content-paces" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+      
+      <!-- LEFT COLUMN: Chart Analysis -->
+      <section class="lg:col-span-5 flex flex-col gap-6">
+        <!-- Box 3.5: Thermal Impact Visualization (D3 Bar Chart) -->
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50 flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-amberAccent"></i>
+              <span>3. Thermal Impact: Pace Shift Analysis</span>
+            </h3>
+            <span class="text-[10px] font-bold px-2.5 py-1 bg-brand-amberAccent/10 text-brand-amberAccent rounded border border-brand-amberAccent/20 uppercase font-mono">D3.js Visualization</span>
+          </div>
+          
+          <p class="text-xs text-slate-300 font-medium leading-relaxed" id="chart-description-text">
+            This chart dynamically visualizes the additional time penalty (seconds per kilometer) added to each training zone due to thermal strain. Slower zones have a larger baseline duration, resulting in a higher total seconds-per-kilometer shift.
+          </p>
+
+          <!-- Chart Container -->
+          <div class="relative w-full overflow-hidden bg-slate-900/50 rounded-xl border border-slate-800/80 p-4">
+            <!-- Placeholder state when no calculation is done yet or multiplier is 1.0 -->
+            <div id="chart-placeholder" class="py-12 text-center text-slate-500 font-bold italic text-sm">
+              Provide performance inputs and increase temperature/humidity to generate thermal impact visualization.
+            </div>
+            <!-- SVG container -->
+            <div id="d3-pace-shift-chart" class="w-full hidden"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: Chart and Grid -->
+      <section class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- Box 4: Training Zones Side-By-Side Comparison Grid -->
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl overflow-hidden flex flex-col shadow-xl hover:border-slate-700/50 transition-all duration-300">
+          <div class="bg-slate-900/60 border-b border-slate-800 px-5 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-brand-accent"></i>
+              <span>Target Pace Strategy Grid</span>
+            </h3>
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+              <!-- Dynamic view mode toggle (Pace vs Speed) -->
+              <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800/60" id="view-mode-toggle">
+                <button type="button" data-mode="pace" class="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-brand-accent text-brand-dark transition duration-150 shadow-sm cursor-pointer border-none">
+                  Pace
+                </button>
+                <button type="button" data-mode="speed" class="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent">
+                  Speed
+                </button>
+              </div>
+
+              <!-- Metric vs Imperial unit toggle -->
+              <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800/60" id="unit-toggle">
+                <button type="button" data-unit="metric" class="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-brand-accent text-brand-dark transition duration-150 shadow-sm cursor-pointer border-none">
+                  Metric (km)
+                </button>
+                <button type="button" data-unit="imperial" class="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent">
+                  Imperial (mi)
+                </button>
+              </div>
+
+              <span class="text-[10px] font-bold bg-slate-950 px-2.5 py-1.5 text-brand-amberAccent rounded-lg border border-brand-amberAccent/20 uppercase tracking-wider font-mono shadow-inner shrink-0 animate-pulse" id="current-multiplier-badge">x1.000 Penalty</span>
+            </div>
+          </div>
+
+          <!-- Desktop Table View -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-900/80 text-[10px] text-slate-400 font-black uppercase tracking-wider border-b border-slate-800/80">
+                  <th class="px-5 py-4 min-w-[200px]">Training Zone &amp; Purpose</th>
+                  <th class="px-4 py-4 text-center">VO2Max %</th>
+                  <th class="px-4 py-4 text-right" id="th-baseline">Baseline</th>
+                  <th class="px-4 py-4 text-right text-brand-amberAccent font-bold" id="th-adjusted">Weather Adjusted</th>
+                  <th class="px-5 py-4 text-center" id="th-shift">Pace Shift</th>
+                </tr>
+              </thead>
+              <tbody id="zones-table-body" class="divide-y divide-slate-850 text-xs font-medium">
+                <!-- Dynamically populated rows -->
+                <tr>
+                  <td colspan="5" class="px-6 py-10 text-center text-slate-500 font-bold italic bg-[#121B2E]">
+                    Provide performance inputs to generate VDOT training boundaries.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards View -->
+          <div class="block md:hidden p-4 space-y-3 bg-[#0a0f1d]" id="zones-cards-container">
+            <div class="py-10 text-center text-slate-500 font-bold italic">
+              Provide performance inputs to generate VDOT training boundaries.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TAB 3 CONTENT: Advisory, Hydration & Laps -->
+    <div id="tab-content-insights" class="hidden flex flex-col gap-6 w-full">
+      
+      <!-- FULL WIDTH: Dynamic Coaching Advisory & Sweat/Hydration Limits -->
+      <section class="lg:col-span-12">
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50 grid grid-cols-1 md:grid-cols-12 gap-6" id="advisory-panel">
+          
+          <!-- Left: Weather Penalty index Meter -->
+          <div class="md:col-span-4 flex flex-col justify-between bg-slate-900/40 rounded-xl p-5 border border-slate-800/80 shadow-inner">
+            <div>
+              <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <i data-lucide="gauge" class="w-4 h-4 text-brand-accent"></i>
+                <span>Thermal Penalty Index</span>
+              </h3>
+              <p class="text-[10px] text-slate-500 font-bold font-mono uppercase tracking-wider">Combined strain value</p>
+            </div>
+            
+            <div class="my-5 text-center">
+              <span class="text-4xl font-black font-mono tracking-tighter text-white" id="advisory-penalty-pct">+0.0%</span>
+              <span class="block text-[11px] font-black text-brand-accent mt-1 uppercase font-mono tracking-wide animate-pulse" id="advisory-level-label">No Degradation (Ideal)</span>
+            </div>
+
+            <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden shadow-inner border border-slate-800/50">
+              <div id="advisory-progress-bar" class="bg-gradient-to-r from-blue-500 to-brand-accent h-full rounded-full transition-all duration-350" style="width: 0%"></div>
+            </div>
+            
+            <div class="flex justify-between text-[9px] font-bold text-slate-500 mt-2 font-mono">
+              <span>25 Ideal</span>
+              <span>40 Mod</span>
+              <span>55 High</span>
+              <span>Extreme</span>
+            </div>
+          </div>
+
+          <!-- Right: Actionable Advisory Context -->
+          <div class="md:col-span-8 flex flex-col justify-between gap-5">
+            <div>
+              <div class="flex items-center gap-2 mb-3 pb-3 border-b border-slate-800/80">
+                <i data-lucide="info" class="w-4 h-4 text-brand-accent"></i>
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Coaching Advisory & Insights</h3>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs mt-2">
+                <div class="space-y-2">
+                  <h4 class="font-bold text-white flex items-center gap-1.5 uppercase tracking-wide text-[11px]">
+                    <span class="w-2 h-2 rounded-full bg-brand-accent shrink-0 shadow-sm shadow-brand-accent/50"></span>
+                    Pacing Strategy
+                  </h4>
+                  <p class="text-slate-300 leading-relaxed font-medium" id="coaching-pacing">
+                    Standard baseline conditions. Focus on holding target pace limits. No compensation necessary.
+                  </p>
+                </div>
+                <div class="space-y-2">
+                  <h4 class="font-bold text-white flex items-center gap-1.5 uppercase tracking-wide text-[11px]">
+                    <span class="w-2 h-2 rounded-full bg-brand-accent shrink-0 shadow-sm shadow-brand-accent/50"></span>
+                    Hydration & Evaporative Cooling
+                  </h4>
+                  <p class="text-slate-300 leading-relaxed font-medium" id="coaching-hydration">
+                    Normal fluid intake rules apply. Drink 400-600ml of fluids per hour of exercise depending on size.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-slate-400">
+              <span class="flex items-center gap-1.5 text-[11px]">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                <span>Calculations verified by VDOT regression matrices</span>
+              </span>
+              <button id="copy-clipboard-btn" class="flex items-center gap-2 px-4 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg font-black text-xs transition cursor-pointer">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Copy Pacing Card</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FULL WIDTH: Dynamic Track & Split Calculator -->
+      <section class="lg:col-span-12">
+        <div class="bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50 flex flex-col gap-6">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="repeat" class="w-4 h-4 text-brand-accent"></i>
+              <div>
+                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest">Dynamic Track Split & Target Multiplier</h2>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5">Instantly project your target laps based on the weather conditions of the day.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <label for="split-distance-select" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Interval:</label>
+              <select id="split-distance-select" class="px-3 py-2 text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-accent text-white font-mono cursor-pointer">
+                <option value="400">400m Lap</option>
+                <option value="800">800m Interval</option>
+                <option value="1000" selected>1km Split</option>
+                <option value="1609.34">1 Mile Split</option>
+                <option value="5000">5km Split</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="split-calculator-container">
+            <!-- Easy Zone splits -->
+            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
+              <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
+                <span class="text-xs font-black text-white uppercase tracking-tight">Easy Zone</span>
+                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">E-PACE</span>
+              </div>
+              <div class="space-y-1.5 text-xs font-medium font-mono">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Target Dist:</span>
+                  <span class="font-bold text-slate-300" id="split-dist-e">1000m</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="font-bold text-slate-400" id="split-base-e">--:--</span>
+                </div>
+                <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
+                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-black" id="split-adj-e">--:--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Marathon Zone splits -->
+            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
+              <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
+                <span class="text-xs font-black text-white uppercase tracking-tight">Marathon Zone</span>
+                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">M-PACE</span>
+              </div>
+              <div class="space-y-1.5 text-xs font-medium font-mono">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Target Dist:</span>
+                  <span class="font-bold text-slate-300" id="split-dist-m">1000m</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="font-bold text-slate-400" id="split-base-m">--:--</span>
+                </div>
+                <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
+                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-black" id="split-adj-m">--:--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Threshold Zone splits -->
+            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
+              <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
+                <span class="text-xs font-black text-white uppercase tracking-tight">Threshold Zone</span>
+                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">T-PACE</span>
+              </div>
+              <div class="space-y-1.5 text-xs font-medium font-mono">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Target Dist:</span>
+                  <span class="font-bold text-slate-300" id="split-dist-t">1000m</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="font-bold text-slate-400" id="split-base-t">--:--</span>
+                </div>
+                <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
+                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-black" id="split-adj-t">--:--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interval Zone splits -->
+            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
+              <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
+                <span class="text-xs font-black text-white uppercase tracking-tight">Interval Zone</span>
+                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">I-PACE</span>
+              </div>
+              <div class="space-y-1.5 text-xs font-medium font-mono">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Target Dist:</span>
+                  <span class="font-bold text-slate-300" id="split-dist-i">1000m</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="font-bold text-slate-400" id="split-base-i">--:--</span>
+                </div>
+                <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
+                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-black" id="split-adj-i">--:--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Floating Bottom Navigation Bar (Sports-Tech Theme) -->
+  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-950/90 backdrop-blur-lg border border-slate-800/80 p-1.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex items-center gap-1 sm:gap-2 max-w-[95vw] w-max" id="floating-bottom-nav">
+    <button type="button" data-tab="config" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
+      <i data-lucide="sliders" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+      <span>Setup</span>
+    </button>
+    <button type="button" data-tab="paces" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
+      <i data-lucide="activity" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+      <span>Pacing</span>
+    </button>
+    <button type="button" data-tab="insights" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
+      <i data-lucide="award" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+      <span>Advisory</span>
+    </button>
+  </div>
+
+
+
+  <!-- DYNAMIC CORE MODULES (Vanilla JS Architecture) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Lucide Icons
+      lucide.createIcons();
+
+      // Global State Object
+      const state = {
+        distanceMeters: 5000,
+        hours: 0,
+        minutes: 20,
+        seconds: 0,
+        temperatureC: 15,
+        relativeHumidity: 50,
+        splitDistance: 1000, // default to 1km
+        viewMode: 'pace', // 'pace' or 'speed'
+        weatherModel: 'wiv', // 'wiv' or 'heat_index'
+        activeTab: 'config',
+        unit: 'metric' // 'metric' or 'imperial'
+      };
+
+      // LocalStorage Persistence Helpers
+      function saveState() {
+        localStorage.setItem('vdot_pace_state', JSON.stringify({
+          distanceMeters: state.distanceMeters,
+          hours: state.hours,
+          minutes: state.minutes,
+          seconds: state.seconds,
+          temperatureC: state.temperatureC,
+          relativeHumidity: state.relativeHumidity,
+          weatherModel: state.weatherModel,
+          viewMode: state.viewMode,
+          splitDistance: state.splitDistance,
+          activeTab: state.activeTab,
+          unit: state.unit
+        }));
+      }
+
+      function loadState() {
+        const saved = localStorage.getItem('vdot_pace_state');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            if (data.distanceMeters !== undefined) state.distanceMeters = data.distanceMeters;
+            if (data.hours !== undefined) state.hours = data.hours;
+            if (data.minutes !== undefined) state.minutes = data.minutes;
+            if (data.seconds !== undefined) state.seconds = data.seconds;
+            if (data.temperatureC !== undefined) state.temperatureC = data.temperatureC;
+            if (data.relativeHumidity !== undefined) state.relativeHumidity = data.relativeHumidity;
+            if (data.weatherModel !== undefined) state.weatherModel = data.weatherModel;
+            if (data.viewMode !== undefined) state.viewMode = data.viewMode;
+            if (data.splitDistance !== undefined) state.splitDistance = data.splitDistance;
+            if (data.activeTab !== undefined) state.activeTab = data.activeTab;
+            if (data.unit !== undefined) state.unit = data.unit;
+            return true;
+          } catch (e) {
+            console.error("Error loading state", e);
+          }
+        }
+        return false;
+      }
+
+      let lastComputedPaces = null;
+
+      // VDOT Core Mathematical Equations
+      // VO2 Cost = -4.60 + 0.182258 * v + 0.000104 * v^2
+      function getVO2Cost(v) {
+        return -4.60 + 0.182258 * v + 0.000104 * v * v;
+      }
+
+      // Drop Factor g = 0.2989558 * e^(-0.1932605 * t) + 0.1894393 * e^(-0.012778 * t) + 0.8
+      function getDropFactor(t) {
+        return 0.2989558 * Math.exp(-0.1932605 * t) + 0.1894393 * Math.exp(-0.012778 * t) + 0.8;
+      }
+
+      // Reverse VDOT to speed (velocity in m/min)
+      // Solve: 0.000104 * v^2 + 0.182258 * v - (4.60 + VO2) = 0
+      function getVelocityFromVO2(vo2) {
+        const a = 0.000104;
+        const b = 0.182258;
+        const c = -(4.60 + vo2);
+        const discriminant = b * b - 4 * a * c;
+        if (discriminant < 0) return 0;
+        return (-b + Math.sqrt(discriminant)) / (2 * a);
+      }
+
+      // Dynamic Binary Search for Equivalent Times given VDOT
+      function getEquivTimeForVDOT(vdot, distanceMeters) {
+        let tMin = 0.5; // 30s minimum
+        let tMax = 600.0; // 10h maximum
+        
+        for (let i = 0; i < 25; i++) {
+          const t = (tMin + tMax) / 2;
+          const v = distanceMeters / t;
+          const vo2 = getVO2Cost(v);
+          const g = getDropFactor(t);
+          const computedVDOT = vo2 / g;
+          
+          if (computedVDOT > vdot) {
+            tMin = t; // too fast, needs longer time
+          } else {
+            tMax = t; // too slow, needs shorter time
+          }
+        }
+        return (tMin + tMax) / 2;
+      }
+
+      // Thermal Degradation Engine
+      function calculateThermalPenalty(tempC, rh) {
+        // Step A: Calculate Dew Point (Tdp) using Magnus-Tetens approximation
+        const gamma = (17.625 * tempC) / (243.04 + tempC) + Math.log(rh / 100);
+        const t_dp = (243.04 * gamma) / (17.625 - gamma);
+        
+        // Step B: Weather Impact Value (WIV) = T + T_dp
+        const wiv = tempC + t_dp;
+        
+        // Step C: NOAA Heat Index in Fahrenheit
+        const tempF = (tempC * 9/5) + 32;
+        let hiF = 0.5 * (tempF + 61.0 + ((tempF - 68.0) * 1.2) + (rh * 0.094));
+        
+        if (tempF >= 80) {
+          // Full NOAA regression
+          const t2 = tempF * tempF;
+          const rh2 = rh * rh;
+          const t2rh = t2 * rh;
+          const trh2 = tempF * rh2;
+          const t2rh2 = t2 * rh2;
+          
+          hiF = -42.379 +
+                2.04901523 * tempF +
+                10.14333127 * rh +
+                -0.22475541 * tempF * rh +
+                -0.00683783 * t2 +
+                -0.05481717 * rh2 +
+                0.00122874 * t2rh +
+                0.00085282 * trh2 +
+                -0.00000199 * t2rh2;
+                
+          // Adjustments
+          if (rh < 13 && tempF >= 80 && tempF <= 112) {
+            const adj = ((13 - rh) / 4) * Math.sqrt((17 - Math.abs(tempF - 95)) / 17);
+            hiF -= adj;
+          } else if (rh > 85 && tempF >= 80 && tempF <= 87) {
+            const adj = ((rh - 85) / 10) * ((87 - tempF) / 5);
+            hiF += adj;
+          }
+        }
+        
+        // Convert heat index Fahrenheit back to Celsius
+        const hiC = (hiF - 32) * 5/9;
+        
+        // Determine pace adjustment multiplier based on selected model
+        let m_pace = 1.0;
+        if (state.weatherModel === 'heat_index') {
+          if (hiC <= 20) {
+            m_pace = 1.0;
+          } else if (hiC <= 27) {
+            m_pace = 1.00 + 0.0020 * (hiC - 20);
+          } else if (hiC <= 35) {
+            m_pace = 1.014 + 0.0050 * (hiC - 27);
+          } else {
+            m_pace = 1.054 + 0.0100 * (hiC - 35);
+          }
+        } else {
+          // Empirical WIV Model
+          if (wiv <= 25) {
+            m_pace = 1.0;
+          } else if (wiv <= 40) {
+            m_pace = 1.00 + 0.0015 * (wiv - 25);
+          } else if (wiv <= 55) {
+            m_pace = 1.022 + 0.0035 * (wiv - 40);
+          } else {
+            m_pace = 1.075 + 0.0060 * (wiv - 55);
+          }
+        }
+        
+        return { t_dp, wiv, hiC, m_pace };
+      }
+
+      // Runner Levels classifications based on VDOT score
+      function getRunnerLevel(vdot) {
+        if (vdot < 35) return { name: "Beginner", desc: "Building general conditioning and aerobic foundations." };
+        if (vdot < 45) return { name: "Intermediate / Recreational", desc: "Healthy fitness profile, participating in regional races." };
+        if (vdot < 55) return { name: "Advanced Local Racer", desc: "High cardiovascular fitness. Highly structured training profiles." };
+        if (vdot < 65) return { name: "Regional Class Competitor", desc: "Substantial training logs, competitive age group racer." };
+        if (vdot < 75) return { name: "National / Elite Candidate", desc: "Exceptional aerobic capacities. Competing on regional & national podiums." };
+        return { name: "International Elite / Olympic Tier", desc: "World-class physiology, extreme running economy efficiency." };
+      }
+
+      // Pace conversion formatting helpers
+      function paceToFormattedString(secPerKm) {
+        if (isNaN(secPerKm) || !isFinite(secPerKm) || secPerKm <= 0) return "--:--";
+        const min = Math.floor(secPerKm / 60);
+        const sec = Math.round(secPerKm % 60);
+        return `${min}:${sec.toString().padStart(2, '0')} /km`;
+      }
+
+      function paceToMileFormattedString(secPerKm) {
+        if (isNaN(secPerKm) || !isFinite(secPerKm) || secPerKm <= 0) return "--:--";
+        const secPerMile = secPerKm * 1.609344;
+        const min = Math.floor(secPerMile / 60);
+        const sec = Math.round(secPerMile % 60);
+        return `${min}:${sec.toString().padStart(2, '0')} /mi`;
+      }
+
+      function formatPaceNoUnit(secPerKm, targetUnit) {
+        if (isNaN(secPerKm) || !isFinite(secPerKm) || secPerKm <= 0) return "--:--";
+        if (targetUnit === 'metric') {
+          const min = Math.floor(secPerKm / 60);
+          const sec = Math.round(secPerKm % 60);
+          return `${min}:${sec.toString().padStart(2, '0')}`;
+        } else {
+          const secPerMile = secPerKm * 1.609344;
+          const min = Math.floor(secPerMile / 60);
+          const sec = Math.round(secPerMile % 60);
+          return `${min}:${sec.toString().padStart(2, '0')}`;
+        }
+      }
+
+      function durationToFormattedTime(totalSeconds) {
+        if (isNaN(totalSeconds) || !isFinite(totalSeconds) || totalSeconds <= 0) return "--:--";
+        const hours = Math.floor(totalSeconds / 3600);
+        const remSecs = totalSeconds % 3600;
+        const minutes = Math.floor(remSecs / 60);
+        const seconds = Math.round(remSecs % 60);
+        
+        if (hours > 0) {
+          return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+
+      // D3.js Pace Shift Bar Chart
+      function renderD3PaceShiftChart(computedPaces) {
+        const placeholder = document.getElementById('chart-placeholder');
+        const chartDiv = document.getElementById('d3-pace-shift-chart');
+        
+        if (!computedPaces || Object.keys(computedPaces).length === 0) {
+          if (placeholder) placeholder.classList.remove('hidden');
+          if (chartDiv) chartDiv.classList.add('hidden');
+          return;
+        }
+
+        if (placeholder) placeholder.classList.add('hidden');
+        if (chartDiv) chartDiv.classList.remove('hidden');
+
+        // Clear existing SVG/Chart
+        chartDiv.innerHTML = "";
+
+        // Prepare data with shortened display names and descriptive full names
+        const zonesList = [
+          { name: "E-Pace", fullName: "Easy (E)", key: "Easy (E) Pace", color: "#6366f1" }, // indigo
+          { name: "M-Pace", fullName: "Marathon (M)", key: "Marathon (M) Pace", color: "#14b8a6" }, // teal
+          { name: "T-Pace", fullName: "Threshold (T)", key: "Threshold (T) Pace", color: "#f59e0b" }, // amber
+          { name: "I-Pace", fullName: "Interval (I)", key: "Interval (I) Pace", color: "#f43f5e" } // rose
+        ];
+
+        const isMetric = state.unit === 'metric';
+        const data = zonesList.map(z => {
+          const paces = computedPaces[z.key];
+          let shift = 0;
+          if (paces) {
+            const conversion = isMetric ? 1.0 : 1.609344;
+            shift = Math.round((paces.adjAvg - paces.baseAvg) * conversion);
+          }
+          return {
+            name: z.name,
+            fullName: z.fullName,
+            shift: Math.max(0, shift), // ensure non-negative shift
+            color: z.color
+          };
+        });
+
+        // Set up dimensions
+        const margin = { top: 25, right: 15, bottom: 30, left: 45 };
+        const containerWidth = chartDiv.clientWidth || 350;
+        const width = containerWidth - margin.left - margin.right;
+        const height = 180 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#d3-pace-shift-chart")
+          .append("svg")
+          .attr("width", containerWidth)
+          .attr("height", 180)
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const x = d3.scaleBand()
+          .domain(data.map(d => d.name))
+          .range([0, width])
+          .padding(0.4);
+
+        // Max shift calculation (minimum of 15s to look nice even with low impact)
+        const maxShift = d3.max(data, d => d.shift) || 0;
+        const yMax = Math.max(15, Math.ceil(maxShift / 5) * 5 + 5);
+
+        const y = d3.scaleLinear()
+          .domain([0, yMax])
+          .nice()
+          .range([height, 0]);
+
+        // Tooltip div (absolute positioning)
+        let tooltip = d3.select("#d3-tooltip");
+        if (tooltip.empty()) {
+          tooltip = d3.select("body").append("div")
+            .attr("id", "d3-tooltip")
+            .style("position", "absolute")
+            .style("visibility", "hidden")
+            .style("background-color", "rgba(15, 23, 42, 0.95)")
+            .style("border", "1px solid rgba(148, 163, 184, 0.2)")
+            .style("color", "#fff")
+            .style("padding", "6px 10px")
+            .style("border-radius", "6px")
+            .style("font-size", "11px")
+            .style("font-weight", "600")
+            .style("pointer-events", "none")
+            .style("z-index", "1000")
+            .style("box-shadow", "0 10px 15px -3px rgba(0, 0, 0, 0.5)")
+            .style("font-family", "Inter, sans-serif");
+        }
+
+        // Add X-axis
+        svg.append("g")
+          .attr("transform", `translate(0,${height})`)
+          .call(d3.axisBottom(x).tickSize(0))
+          .call(g => g.select(".domain").attr("stroke", "#334155"))
+          .selectAll("text")
+          .attr("class", "text-[10px] font-semibold text-slate-400 font-sans")
+          .style("fill", "#94a3b8")
+          .attr("dy", "10px");
+
+        // Add Y-axis gridlines
+        svg.append("g")
+          .call(d3.axisLeft(y).ticks(4).tickFormat(d => `${d}s`))
+          .call(g => g.select(".domain").attr("stroke", "#334155"))
+          .call(g => g.selectAll(".tick line")
+            .attr("stroke", "#1e293b")
+            .attr("x2", width)) // Grid lines stretching across chart
+          .selectAll("text")
+          .attr("class", "text-[10px] font-semibold text-slate-400 font-mono")
+          .style("fill", "#94a3b8");
+
+        // Add bars with hover actions and entering transition
+        svg.selectAll(".bar")
+          .data(data)
+          .enter()
+          .append("rect")
+          .attr("class", "bar transition-all duration-150 cursor-pointer")
+          .attr("x", d => x(d.name))
+          .attr("y", height) // start animation from bottom
+          .attr("width", x.bandwidth())
+          .attr("height", 0) // start animation with height 0
+          .attr("fill", d => d.color)
+          .attr("rx", 4) // rounded top corners
+          .on("mouseover", function(event, d) {
+            d3.select(this)
+              .style("opacity", "0.85")
+              .attr("stroke", "#1e293b")
+              .attr("stroke-width", "1.5");
+            tooltip.style("visibility", "visible")
+              .html(`
+                <div class="font-bold">${d.fullName} Zone</div>
+                <div class="text-orange-400 mt-0.5">Pace Shift: +${d.shift} ${isMetric ? 's/km' : 's/mi'}</div>
+              `);
+          })
+          .on("mousemove", function(event) {
+            tooltip
+              .style("top", (event.pageY - 38) + "px")
+              .style("left", (event.pageX + 12) + "px");
+          })
+          .on("mouseout", function() {
+            d3.select(this)
+              .style("opacity", "1.0")
+              .attr("stroke", "none");
+            tooltip.style("visibility", "hidden");
+          })
+          .transition()
+          .duration(700)
+          .attr("y", d => y(d.shift))
+          .attr("height", d => height - y(d.shift));
+
+        // Add exact value labels on top of the bars with entering transition
+        svg.selectAll(".label")
+          .data(data)
+          .enter()
+          .append("text")
+          .attr("class", "label font-mono font-bold text-[10px]")
+          .attr("text-anchor", "middle")
+          .attr("x", d => x(d.name) + x.bandwidth() / 2)
+          .attr("y", height) // start animation from baseline
+          .style("fill", d => d.color)
+          .text(d => d.shift > 0 ? `+${d.shift}s` : "Ideal")
+          .transition()
+          .duration(700)
+          .attr("y", d => y(d.shift) - 6);
+      }
+
+      // Main Calculation & DOM Updater
+      function recalculate() {
+        const distance = state.distanceMeters;
+        const h = state.hours;
+        const m = state.minutes;
+        const s = state.seconds;
+        
+        const totalSeconds = h * 3600 + m * 60 + s;
+        const totalMinutes = totalSeconds / 60;
+        
+        const tempC = state.temperatureC;
+        const rh = state.relativeHumidity;
+        
+        // Secure check to avoid NaN and Zero Division
+        if (distance <= 0 || totalSeconds <= 0) {
+          lastComputedPaces = null;
+          renderD3PaceShiftChart(null);
+          document.getElementById('vdot-score').textContent = "--";
+          document.getElementById('runner-level').textContent = "Input Needed";
+          document.getElementById('runner-level').className = "inline-block px-2.5 py-1 bg-slate-800 text-slate-400 text-[10px] font-black tracking-wide rounded-lg border border-slate-700/80 self-center uppercase font-mono";
+          document.getElementById('zones-table-body').innerHTML = `
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-slate-500 font-bold italic bg-[#121B2E]">
+                Please enter a valid race distance and race performance time to calculate target paces.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        // Calculate VDOT
+        const velocityMPerMin = distance / totalMinutes;
+        const vo2Cost = getVO2Cost(velocityMPerMin);
+        const dropFactor = getDropFactor(totalMinutes);
+        const vdot = vo2Cost / dropFactor;
+
+        // Display VDOT
+        const vdotDisplayVal = isNaN(vdot) || !isFinite(vdot) ? "--" : vdot.toFixed(1);
+        document.getElementById('vdot-score').textContent = vdotDisplayVal;
+
+        // Calculate Runner Level
+        const level = getRunnerLevel(vdot);
+        const runnerLevelEl = document.getElementById('runner-level');
+        runnerLevelEl.textContent = level.name;
+        
+        // Dynamically style runner level classes for dark mode
+        if (vdot < 45) {
+          runnerLevelEl.className = "inline-block px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-black tracking-wide rounded-lg border border-slate-700 self-center uppercase font-mono";
+        } else if (vdot < 55) {
+          runnerLevelEl.className = "inline-block px-2.5 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-black tracking-wide rounded-lg border border-indigo-500/20 self-center uppercase font-mono";
+        } else if (vdot < 65) {
+          runnerLevelEl.className = "inline-block px-2.5 py-1 bg-brand-accent/10 text-brand-accent text-[10px] font-black tracking-wide rounded-lg border border-brand-accent/25 self-center uppercase font-mono shadow-md shadow-brand-accent/5";
+        } else {
+          runnerLevelEl.className = "inline-block px-2.5 py-1 bg-rose-500/10 text-rose-400 text-[10px] font-black tracking-wide rounded-lg border border-rose-500/20 self-center uppercase font-mono animate-pulse";
+        }
+        document.getElementById('vdot-description').textContent = `${level.desc} Your calculated VDOT score of ${vdotDisplayVal} is optimized based on Jack Daniels' running formulas and represents your steady-state running potential.`;
+
+        // Calculate Environmental Indicators
+        const weather = calculateThermalPenalty(tempC, rh);
+        const t_dp = weather.t_dp;
+        const wiv = weather.wiv;
+        const m_pace = weather.m_pace;
+
+        // Display Ambient Calculations
+        document.getElementById('dew-point-val').textContent = `${t_dp.toFixed(1)}°C / ${(t_dp * 1.8 + 32).toFixed(1)}°F`;
+        document.getElementById('current-multiplier-badge').textContent = `x${m_pace.toFixed(3)} Penalty`;
+        
+        // Dew Point Category Label (High Contrast Brighter in Dark Mode)
+        const dewLabelEl = document.getElementById('dew-point-label');
+        if (t_dp < 10) {
+          dewLabelEl.textContent = "Very comfortable / Dry";
+          dewLabelEl.className = "block text-[10px] font-bold text-emerald-400";
+        } else if (t_dp < 15) {
+          dewLabelEl.textContent = "Comfortable baseline";
+          dewLabelEl.className = "block text-[10px] font-bold text-brand-accent";
+        } else if (t_dp < 18) {
+          dewLabelEl.textContent = "Humid / Sticky air";
+          dewLabelEl.className = "block text-[10px] font-bold text-amber-400";
+        } else if (t_dp < 21) {
+          dewLabelEl.textContent = "Very Sticky / Oppressive";
+          dewLabelEl.className = "block text-[10px] font-bold text-orange-400";
+        } else {
+          dewLabelEl.textContent = "Extreme humidity / Severe strain";
+          dewLabelEl.className = "block text-[10px] font-bold text-rose-400";
+        }
+
+        // WIV/Heat Index Category and Label
+        const wivLabelEl = document.getElementById('wiv-label');
+        const metricTitleIndicator = document.getElementById('metric-title-indicator');
+        
+        if (state.weatherModel === 'heat_index') {
+          if (metricTitleIndicator) metricTitleIndicator.textContent = "Calculated Heat Index";
+          document.getElementById('wiv-val').textContent = `${weather.hiC.toFixed(1)}°C`;
+          
+          if (weather.hiC <= 27) {
+            wivLabelEl.textContent = "Ideal Heat Range";
+            wivLabelEl.className = "block text-[10px] font-bold text-emerald-400";
+          } else if (weather.hiC <= 32) {
+            wivLabelEl.textContent = "Caution (Fatigue Possible)";
+            wivLabelEl.className = "block text-[10px] font-bold text-amber-400";
+          } else if (weather.hiC <= 41) {
+            wivLabelEl.textContent = "Extreme Caution (Strain)";
+            wivLabelEl.className = "block text-[10px] font-bold text-orange-400";
+          } else {
+            wivLabelEl.textContent = "Danger (Heat Stroke Risk)";
+            wivLabelEl.className = "block text-[10px] font-bold text-rose-400";
+          }
+        } else {
+          if (metricTitleIndicator) metricTitleIndicator.textContent = "Weather Impact Index";
+          document.getElementById('wiv-val').textContent = wiv.toFixed(1);
+          
+          if (wiv <= 25) {
+            wivLabelEl.textContent = "Ideal Racing Conditions";
+            wivLabelEl.className = "block text-[10px] font-bold text-emerald-400";
+          } else if (wiv <= 40) {
+            wivLabelEl.textContent = "Moderate Impact (Noticeable)";
+            wivLabelEl.className = "block text-[10px] font-bold text-amber-400";
+          } else if (wiv <= 55) {
+            wivLabelEl.textContent = "High Stress (Pace Affected)";
+            wivLabelEl.className = "block text-[10px] font-bold text-orange-400";
+          } else {
+            wivLabelEl.textContent = "Extreme Stress / Pace Degraded";
+            wivLabelEl.className = "block text-[10px] font-bold text-rose-400";
+          }
+        }
+
+        // Calculate Equivalent race performance times and weather-degraded alternatives
+        const equiv5kMin = getEquivTimeForVDOT(vdot, 5000);
+        const equiv10kMin = getEquivTimeForVDOT(vdot, 10000);
+        const equivHalfMin = getEquivTimeForVDOT(vdot, 21097.5);
+        const equivFullMin = getEquivTimeForVDOT(vdot, 42195);
+
+        // Populate Baseline equivalents
+        document.getElementById('equiv-5k').textContent = durationToFormattedTime(equiv5kMin * 60);
+        document.getElementById('equiv-10k').textContent = durationToFormattedTime(equiv10kMin * 60);
+        document.getElementById('equiv-half').textContent = durationToFormattedTime(equivHalfMin * 60);
+        document.getElementById('equiv-full').textContent = durationToFormattedTime(equivFullMin * 60);
+
+        // Populate Weather Adjusted equivalents
+        document.getElementById('equiv-5k-weather').textContent = `Adj: ${durationToFormattedTime(equiv5kMin * 60 * m_pace)}`;
+        document.getElementById('equiv-10k-weather').textContent = `Adj: ${durationToFormattedTime(equiv10kMin * 60 * m_pace)}`;
+        document.getElementById('equiv-half-weather').textContent = `Adj: ${durationToFormattedTime(equivHalfMin * 60 * m_pace)}`;
+        document.getElementById('equiv-full-weather').textContent = `Adj: ${durationToFormattedTime(equivFullMin * 60 * m_pace)}`;
+
+        // Calculate VDOT training zones side-by-side
+        // Zones definitions with intensity bounds
+        const zones = [
+          { 
+            name: "Easy (E) Pace", 
+            purpose: "Aerobic capacity, recovery, and cardiac muscular capillary density",
+            pMin: 0.59, 
+            pMax: 0.74,
+            style: "text-indigo-600 bg-indigo-50 border-indigo-100"
+          },
+          { 
+            name: "Marathon (M) Pace", 
+            purpose: "Aerobic threshold development, marathon steady state race economy",
+            pMin: 0.75, 
+            pMax: 0.84,
+            style: "text-teal-600 bg-teal-50 border-teal-100"
+          },
+          { 
+            name: "Threshold (T) Pace", 
+            purpose: "Lactate threshold peak clearance, muscle endurance fatigue buffering",
+            pMin: 0.83, 
+            pMax: 0.88,
+            style: "text-amber-600 bg-amber-50 border-amber-100"
+          },
+          { 
+            name: "Interval (I) Pace", 
+            purpose: "VO2max expansion, running economy power output, fast aerobic power",
+            pMin: 0.95, 
+            pMax: 1.00,
+            style: "text-rose-600 bg-rose-50 border-rose-100"
+          }
+        ];
+
+        // Update table headers based on viewMode and unit setting
+        const thBaseline = document.getElementById('th-baseline');
+        const thAdjusted = document.getElementById('th-adjusted');
+        const thShift = document.getElementById('th-shift');
+        if (thBaseline && thAdjusted && thShift) {
+          const uSuffix = state.unit === 'metric' ? ' (/km)' : ' (/mi)';
+          const sSuffix = state.unit === 'metric' ? ' (km/h)' : ' (mph)';
+          if (state.viewMode === 'pace') {
+            thBaseline.textContent = "Baseline" + uSuffix;
+            thAdjusted.textContent = "Adjusted" + uSuffix;
+            thShift.textContent = "Pace Shift";
+          } else {
+            thBaseline.textContent = "Baseline" + sSuffix;
+            thAdjusted.textContent = "Adjusted" + sSuffix;
+            thShift.textContent = "Speed Shift";
+          }
+        }
+
+        let zonesHtml = "";
+        let zonesCardsHtml = "";
+        const computedPaces = {}; // store for split calculations
+
+        zones.forEach((zone, index) => {
+          // Find speeds
+          const vo2Min = zone.pMin * vdot;
+          const vo2Max = zone.pMax * vdot;
+          
+          const velMin = getVelocityFromVO2(vo2Min);
+          const velMax = getVelocityFromVO2(vo2Max);
+          
+          // Convert to pace (seconds per kilometer)
+          const paceSecMin = (1000 / velMin) * 60; // slower pace
+          const paceSecMax = (1000 / velMax) * 60; // faster pace
+          
+          // Apply weather penalty multiplier
+          const adjPaceSecMin = paceSecMin * m_pace;
+          const adjPaceSecMax = paceSecMax * m_pace;
+          
+          // Save mid points for interval lap calculations
+          computedPaces[zone.name] = {
+            baseMin: paceSecMin,
+            baseMax: paceSecMax,
+            adjMin: adjPaceSecMin,
+            adjMax: adjPaceSecMax,
+            baseAvg: (paceSecMin + paceSecMax) / 2,
+            adjAvg: (adjPaceSecMin + adjPaceSecMax) / 2
+          };
+
+          let baselineStr, adjStr, shiftStr;
+
+          if (state.viewMode === 'pace') {
+            baselineStr = `${formatPaceNoUnit(paceSecMin, state.unit)} - ${formatPaceNoUnit(paceSecMax, state.unit)}`;
+            adjStr = `${formatPaceNoUnit(adjPaceSecMin, state.unit)} - ${formatPaceNoUnit(adjPaceSecMax, state.unit)}`;
+            
+            // Calculate absolute shift range in seconds per metric/imperial unit
+            const conversion = state.unit === 'metric' ? 1.0 : 1.609344;
+            const shiftMin = Math.round((adjPaceSecMin - paceSecMin) * conversion);
+            const shiftMax = Math.round((adjPaceSecMax - paceSecMax) * conversion);
+            const unitLabel = state.unit === 'metric' ? 's/km' : 's/mi';
+            
+            shiftStr = shiftMin === 0 ? "Ideal" : `+${shiftMin} to +${shiftMax} ${unitLabel}`;
+          } else {
+            // Speed mode (km/h and mph)
+            const speedBaseMin = velMin * 0.06 * (state.unit === 'metric' ? 1.0 : 0.621371);
+            const speedBaseMax = velMax * 0.06 * (state.unit === 'metric' ? 1.0 : 0.621371);
+            const speedAdjMin = (velMin / m_pace) * 0.06 * (state.unit === 'metric' ? 1.0 : 0.621371);
+            const speedAdjMax = (velMax / m_pace) * 0.06 * (state.unit === 'metric' ? 1.0 : 0.621371);
+
+            baselineStr = `${speedBaseMin.toFixed(1)} - ${speedBaseMax.toFixed(1)}`;
+            adjStr = `${speedAdjMin.toFixed(1)} - ${speedAdjMax.toFixed(1)}`;
+
+            const shiftMin = speedAdjMin - speedBaseMin;
+            const shiftMax = speedAdjMax - speedBaseMax;
+            const unitLabel = state.unit === 'metric' ? 'km/h' : 'mph';
+            
+            if (m_pace <= 1.0) {
+              shiftStr = "Ideal";
+            } else {
+              // Show negative shift for speed decrease
+              shiftStr = `${shiftMin.toFixed(1)} to ${shiftMax.toFixed(1)} ${unitLabel}`;
+            }
+          }
+
+          // Build Desktop Row
+          zonesHtml += `
+            <tr class="hover:bg-slate-800/40 border-b border-slate-850 transition duration-100 animate-update" style="animation-delay: ${index * 40}ms">
+              <td class="px-5 py-3.5">
+                <span class="block font-black text-white text-[13px]">${zone.name}</span>
+                <span class="block text-[10px] text-slate-400 font-medium leading-relaxed mt-0.5 max-w-sm">${zone.purpose}</span>
+              </td>
+              <td class="px-4 py-3.5 text-center font-mono font-black text-slate-300 bg-slate-900/20">${Math.round(zone.pMin*100)}% - ${Math.round(zone.pMax*100)}%</td>
+              <td class="px-4 py-3.5 text-right font-mono font-extrabold text-slate-100">${baselineStr}</td>
+              <td class="px-4 py-3.5 text-right bg-brand-amberAccent/5 font-mono font-black text-brand-amberAccent">${adjStr}</td>
+              <td class="px-5 py-3.5 text-center">
+                <span class="inline-block px-2.5 py-1 rounded-lg font-mono font-black text-[10px] ${m_pace > 1.0 ? 'bg-brand-amberAccent/10 text-brand-amberAccent border border-brand-amberAccent/20' : 'bg-slate-800 text-slate-400 border border-slate-700/60'}">
+                  ${shiftStr}
+                </span>
+              </td>
+            </tr>
+          `;
+
+          // Build Mobile Card
+          const shiftBadgeClass = m_pace > 1.0 
+            ? "bg-brand-amberAccent/15 text-brand-amberAccent border border-brand-amberAccent/25 font-bold px-2 py-0.5 rounded text-[10px] font-mono" 
+            : "bg-slate-800 text-slate-400 border border-slate-700 font-bold px-2 py-0.5 rounded text-[10px] font-mono";
+
+          const subUnitLabel = state.viewMode === 'pace' 
+            ? (state.unit === 'metric' ? '/km' : '/mi') 
+            : (state.unit === 'metric' ? 'km/h' : 'mph');
+
+          zonesCardsHtml += `
+            <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-2.5 hover:border-slate-700/40 transition">
+              <!-- Card Header -->
+              <div class="flex items-start justify-between">
+                <div>
+                  <h4 class="text-xs font-black text-white tracking-wide">${zone.name}</h4>
+                  <p class="text-[9px] text-slate-500 font-bold font-mono mt-0.5 uppercase">${Math.round(zone.pMin*100)}% - ${Math.round(zone.pMax*100)}% VO2Max</p>
+                </div>
+                <span class="${shiftBadgeClass}">
+                  ${shiftStr}
+                </span>
+              </div>
+              
+              <!-- Card Values Grid -->
+              <div class="grid grid-cols-2 gap-3 py-1 bg-slate-950/40 rounded-lg px-3 border border-slate-900/60">
+                <div>
+                  <span class="block text-[9px] text-slate-500 font-bold uppercase font-mono">Baseline</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-sm font-extrabold font-mono text-slate-100">${baselineStr}</span>
+                    <span class="text-[9px] text-slate-500 font-bold font-mono">${subUnitLabel}</span>
+                  </div>
+                </div>
+                <div>
+                  <span class="block text-[9px] text-brand-amberAccent/75 font-bold uppercase font-mono">Adjusted</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-sm font-extrabold font-mono text-brand-amberAccent">${adjStr}</span>
+                    <span class="text-[9px] text-brand-amberAccent/60 font-bold font-mono">${subUnitLabel}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Purpose -->
+              <p class="text-[10px] text-slate-400 leading-relaxed font-medium">${zone.purpose}</p>
+            </div>
+          `;
+        });
+
+        document.getElementById('zones-table-body').innerHTML = zonesHtml;
+        document.getElementById('zones-cards-container').innerHTML = zonesCardsHtml;
+
+        // Actionable Coaching Advice System
+        const penaltyPercentage = ((m_pace - 1.0) * 100).toFixed(1);
+        document.getElementById('advisory-penalty-pct').textContent = `+${penaltyPercentage}%`;
+        
+        // Progress Bar color and width
+        const progressBar = document.getElementById('advisory-progress-bar');
+        const levelLabel = document.getElementById('advisory-level-label');
+        
+        let advisoryProgress = Math.min(((wiv - 25) / 45) * 100, 100);
+        if (wiv <= 25) advisoryProgress = 0;
+        
+        progressBar.style.width = `${advisoryProgress}%`;
+        
+        if (wiv <= 25) {
+          progressBar.className = "bg-emerald-400 h-full rounded-full transition-all duration-300";
+          levelLabel.textContent = "Ideal (No Degradation)";
+          levelLabel.className = "block text-xs font-black text-emerald-400 mt-1 uppercase tracking-wide";
+        } else if (wiv <= 40) {
+          progressBar.className = "bg-amber-400 h-full rounded-full transition-all duration-300";
+          levelLabel.textContent = "Moderate Penalty";
+          levelLabel.className = "block text-xs font-black text-amber-400 mt-1 uppercase tracking-wide";
+        } else if (wiv <= 55) {
+          progressBar.className = "bg-orange-400 h-full rounded-full transition-all duration-300";
+          levelLabel.textContent = "High Thermal Strain";
+          levelLabel.className = "block text-xs font-black text-brand-amberAccent mt-1 uppercase tracking-wide";
+        } else {
+          progressBar.className = "bg-rose-500 h-full rounded-full transition-all duration-300 animate-pulse";
+          levelLabel.textContent = "Extreme Oppressive / Danger";
+          levelLabel.className = "block text-xs font-black text-rose-400 mt-1 uppercase tracking-wide";
+        }
+
+        // Coaching texts generator based on exact environment index
+        const isMetric = state.unit === 'metric';
+        const conversion = isMetric ? 1.0 : 1.609344;
+        const shiftUnit = isMetric ? 'kilometer' : 'mile';
+        const shiftUnitAbbr = isMetric ? 'sec/km' : 'sec/mi';
+        const shiftMin = Math.round((m_pace - 1) * 300 * conversion);
+        const shiftMax = Math.round((m_pace - 1) * 340 * conversion);
+        const tempString = isMetric ? `${t_dp.toFixed(0)}°C` : `${(t_dp * 1.8 + 32).toFixed(0)}°F`;
+
+        // Update the D3 chart description text dynamically
+        const chartDescEl = document.getElementById('chart-description-text');
+        if (chartDescEl) {
+          chartDescEl.textContent = isMetric
+            ? "This chart dynamically visualizes the additional time penalty (seconds per kilometer) added to each training zone due to thermal strain. Slower zones have a larger baseline duration, resulting in a higher total seconds-per-kilometer shift."
+            : "This chart dynamically visualizes the additional time penalty (seconds per mile) added to each training zone due to thermal strain. Slower zones have a larger baseline duration, resulting in a higher total seconds-per-mile shift.";
+        }
+
+        let pacingText = "Hold targets exactly. Your metabolic cost matches baseline standard. Pace, heart rate, and perceived exertion will align perfectly.";
+        let hydrationText = isMetric
+          ? "Drink according to thirsty feelings. Focus on 300-500ml hydration per hour if sweat is normal. Focus on sodium replacement after key efforts."
+          : "Drink according to thirsty feelings. Focus on 10-16 oz (300-500ml) hydration per hour if sweat is normal. Focus on sodium replacement after key efforts.";
+
+        if (wiv > 25 && wiv <= 40) {
+          pacingText = `The weather adds a modest metabolic toll. Slow your steady-state runs by roughly ${shiftMin} to ${shiftMax} seconds per ${shiftUnit}. Avoid chasing baseline threshold paces. Run by Relative Effort (RPE).`;
+          hydrationText = isMetric
+            ? `Increased sweat rates will trigger. Ensure electrolyte pre-hydration. Drink 500-750ml of water/electrolytes for each hour of running. Sweat evaporation rate is decent.`
+            : `Increased sweat rates will trigger. Ensure electrolyte pre-hydration. Drink 16-24 oz (500-750ml) of water/electrolytes for each hour of running. Sweat evaporation rate is decent.`;
+        } else if (wiv > 40 && wiv <= 55) {
+          pacingText = `HIGH STRAIN: Sweat is struggling to evaporate due to dew points near ${tempString}. Your heart rate will experience significant Cardiac Drift, rising continuously. De-escalate targets by ${shiftMin} to ${shiftMax} ${shiftUnitAbbr}. Split intervals into shorter segments with longer recoveries.`;
+          hydrationText = isMetric
+            ? `Sweat rates are heavy but cooling is inefficient. Electrolyte replacement is MANDATORY. Aim for 750-1000ml fluid/hr with 600-1000mg sodium. Monitor weight loss after runs.`
+            : `Sweat rates are heavy but cooling is inefficient. Electrolyte replacement is MANDATORY. Aim for 24-34 oz (750-1000ml) fluid/hr with 600-1000mg sodium. Monitor weight loss after runs.`;
+        } else if (wiv > 55) {
+          pacingText = `CRITICAL DANGER: Atmospheric cooling capability is nearly locked. Running baseline paces risks rapid heatstroke. Cut long distance efforts completely or move indoors. If training, slow down pace by at least ${shiftMin} ${shiftUnitAbbr} and ignore paces altogether. Focus strictly on maintaining a low, safe Heart Rate.`;
+          hydrationText = isMetric
+            ? `Sweat will drip off without cooling you. Maximum sweating capacity limit reached. Drink ice-slurry drinks before training to cool core temp. Strict electrolyte intake is critical. Cap workouts at 45 minutes max.`
+            : `Sweat will drip off without cooling you. Maximum sweating capacity limit reached. Drink ice-slurry drinks before training to cool core temp. Strict electrolyte intake is critical. Cap workouts at 45 minutes max.`;
+        }
+
+        document.getElementById('coaching-pacing').textContent = pacingText;
+        document.getElementById('coaching-hydration').textContent = hydrationText;
+
+        // Populate Split Table
+        const splitDist = state.splitDistance;
+        const distFactor = splitDist / 1000; // split is relative to 1km
+
+        const zonesKeys = [
+          { name: "Easy (E) Pace", distEl: "split-dist-e", baseEl: "split-base-e", adjEl: "split-adj-e" },
+          { name: "Marathon (M) Pace", distEl: "split-dist-m", baseEl: "split-base-m", adjEl: "split-adj-m" },
+          { name: "Threshold (T) Pace", distEl: "split-dist-t", baseEl: "split-base-t", adjEl: "split-adj-t" },
+          { name: "Interval (I) Pace", distEl: "split-dist-i", baseEl: "split-base-i", adjEl: "split-adj-i" }
+        ];
+
+        zonesKeys.forEach((key) => {
+          document.getElementById(key.distEl).textContent = splitDist === 1609.34 ? "1 Mile" : `${splitDist}m`;
+          const paces = computedPaces[key.name];
+          if (paces) {
+            const baseAvgSplit = paces.baseAvg * distFactor;
+            const adjAvgSplit = paces.adjAvg * distFactor;
+            
+            document.getElementById(key.baseEl).textContent = durationToFormattedTime(baseAvgSplit);
+            document.getElementById(key.adjEl).textContent = durationToFormattedTime(adjAvgSplit);
+          }
+        });
+
+        // Render D3 Pace Shift Chart and cache results for resize handler
+        lastComputedPaces = computedPaces;
+        renderD3PaceShiftChart(computedPaces);
+
+        // Auto-persist state
+        saveState();
+      }
+
+      // Event Listeners setup
+      // UI Highlighting Helpers for Presets
+      function updateDistancePresetsUI(activeMeters) {
+        document.querySelectorAll('#distance-presets button').forEach((btn) => {
+          const meters = parseFloat(btn.getAttribute('data-meters'));
+          if (Math.abs(meters - activeMeters) < 1.0) {
+            btn.className = "px-1.5 py-2.5 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition border-none shadow-md shadow-brand-accent/10 cursor-pointer";
+          } else {
+            btn.className = "px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight border border-slate-700/40 text-slate-200 hover:bg-slate-800 transition cursor-pointer hover:border-slate-600/60";
+          }
+        });
+      }
+
+      function updateWeatherPresetsUI(activeTemp, activeRh) {
+        document.querySelectorAll('#weather-presets button').forEach((btn) => {
+          const temp = parseInt(btn.getAttribute('data-temp'));
+          const rh = parseInt(btn.getAttribute('data-rh'));
+          if (temp === activeTemp && rh === activeRh) {
+            btn.className = "px-3 py-2.5 text-left text-xs font-black rounded-lg bg-brand-accent/10 border-2 border-brand-accent text-brand-accent hover:bg-brand-accent/20 transition flex items-center justify-between cursor-pointer shadow-md shadow-brand-accent/5";
+          } else {
+            btn.className = "px-3 py-2.5 text-left text-xs font-bold rounded-lg bg-brand-panelLight border border-slate-700/50 text-slate-200 hover:bg-slate-800 transition flex items-center justify-between cursor-pointer";
+          }
+        });
+      }
+
+      // Distance presets click handler
+      document.getElementById('distance-presets').addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const meters = parseFloat(button.getAttribute('data-meters'));
+        state.distanceMeters = meters;
+        document.getElementById('custom-distance').value = Math.round(meters);
+        updateDistanceHelper(meters);
+        updateDistancePresetsUI(meters);
+        recalculate();
+      });
+
+      // Custom distance manual update
+      document.getElementById('custom-distance').addEventListener('input', (e) => {
+        const meters = parseFloat(e.target.value) || 0;
+        state.distanceMeters = meters;
+        
+        updateDistanceHelper(meters);
+        updateDistancePresetsUI(meters);
+        recalculate();
+      });
+
+      function updateDistanceHelper(meters) {
+        const miles = (meters / 1609.344).toFixed(2);
+        const km = (meters / 1000).toFixed(2);
+        if (state.unit === 'metric') {
+          document.getElementById('distance-helper').textContent = `${km} km (${miles} miles)`;
+        } else {
+          document.getElementById('distance-helper').textContent = `${miles} miles (${km} km)`;
+        }
+      }
+
+      // Performance time inputs manual update
+      ['time-hours', 'time-minutes', 'time-seconds'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', () => {
+          state.hours = parseInt(document.getElementById('time-hours').value) || 0;
+          state.minutes = parseInt(document.getElementById('time-minutes').value) || 0;
+          state.seconds = parseInt(document.getElementById('time-seconds').value) || 0;
+          recalculate();
+        });
+      });
+
+      // Weather Presets click handler
+      document.getElementById('weather-presets').addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const temp = parseInt(button.getAttribute('data-temp'));
+        const rh = parseInt(button.getAttribute('data-rh'));
+
+        state.temperatureC = temp;
+        state.relativeHumidity = rh;
+
+        document.getElementById('temp-slider').value = temp;
+        document.getElementById('humidity-slider').value = rh;
+
+        updateTempSliderDisplay(temp);
+        updateHumiditySliderDisplay(rh);
+        updateWeatherPresetsUI(temp, rh);
+        recalculate();
+      });
+
+      // Temperature Slider events
+      const tempSlider = document.getElementById('temp-slider');
+      tempSlider.addEventListener('input', (e) => {
+        const temp = parseInt(e.target.value);
+        state.temperatureC = temp;
+        
+        updateTempSliderDisplay(temp);
+        updateWeatherPresetsUI(temp, state.relativeHumidity);
+        recalculate();
+      });
+
+      function updateTempSliderDisplay(temp) {
+        const f = (temp * 1.8 + 32).toFixed(0);
+        document.getElementById('temp-display').textContent = `${temp}°C / ${f}°F`;
+      }
+
+      // Humidity Slider events
+      const humiditySlider = document.getElementById('humidity-slider');
+      humiditySlider.addEventListener('input', (e) => {
+        const rh = parseInt(e.target.value);
+        state.relativeHumidity = rh;
+
+        updateHumiditySliderDisplay(rh);
+        updateWeatherPresetsUI(state.temperatureC, rh);
+        recalculate();
+      });
+
+      function updateHumiditySliderDisplay(rh) {
+        document.getElementById('humidity-display').textContent = `${rh}%`;
+      }
+
+      // Smart Weather Sync Functionality (Real API integration with open-meteo)
+      async function performWeatherSearch() {
+        const input = document.getElementById('weather-location-input');
+        const status = document.getElementById('weather-status');
+        const query = input.value.trim();
+        if (!query) return;
+
+        status.textContent = "Searching...";
+        status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+
+        try {
+          const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1`);
+          const geoData = await geoRes.json();
+
+          if (!geoData.results || geoData.results.length === 0) {
+            status.textContent = "City not found";
+            status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+            return;
+          }
+
+          const city = geoData.results[0];
+          const lat = city.latitude;
+          const lon = city.longitude;
+          const cityName = city.name + (city.admin1 ? `, ${city.admin1}` : '') + (city.country_code ? ` [${city.country_code.toUpperCase()}]` : '');
+
+          status.textContent = "Fetching...";
+          status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+
+          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`);
+          const weatherData = await weatherRes.json();
+
+          if (!weatherData.current) {
+            status.textContent = "Weather unavailable";
+            status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+            return;
+          }
+
+          const temp = Math.round(weatherData.current.temperature_2m);
+          const rh = Math.round(weatherData.current.relative_humidity_2m);
+
+          state.temperatureC = Math.max(0, Math.min(50, temp));
+          state.relativeHumidity = Math.max(10, Math.min(100, rh));
+
+          document.getElementById('temp-slider').value = state.temperatureC;
+          document.getElementById('humidity-slider').value = state.relativeHumidity;
+
+          updateTempSliderDisplay(state.temperatureC);
+          updateHumiditySliderDisplay(state.relativeHumidity);
+          updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
+
+          status.textContent = `${cityName} synced!`;
+          status.className = "text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wide";
+
+          recalculate();
+        } catch (error) {
+          console.error(error);
+          status.textContent = "Sync error";
+          status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+        }
+      }
+
+      document.getElementById('weather-search-btn').addEventListener('click', performWeatherSearch);
+      document.getElementById('weather-location-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          performWeatherSearch();
+        }
+      });
+
+      document.getElementById('weather-gps-btn').addEventListener('click', () => {
+        const status = document.getElementById('weather-status');
+        if (!navigator.geolocation) {
+          status.textContent = "No GPS support";
+          status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+          return;
+        }
+
+        status.textContent = "GPS locating...";
+        status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          status.textContent = "Syncing GPS...";
+          status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+
+          try {
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`);
+            const weatherData = await weatherRes.json();
+
+            if (!weatherData.current) {
+              status.textContent = "No data";
+              status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+              return;
+            }
+
+            const temp = Math.round(weatherData.current.temperature_2m);
+            const rh = Math.round(weatherData.current.relative_humidity_2m);
+
+            state.temperatureC = Math.max(0, Math.min(50, temp));
+            state.relativeHumidity = Math.max(10, Math.min(100, rh));
+
+            document.getElementById('temp-slider').value = state.temperatureC;
+            document.getElementById('humidity-slider').value = state.relativeHumidity;
+
+            updateTempSliderDisplay(state.temperatureC);
+            updateHumiditySliderDisplay(state.relativeHumidity);
+            updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
+
+            status.textContent = "Local GPS synced!";
+            status.className = "text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wide";
+
+            recalculate();
+          } catch (e) {
+            console.error(e);
+            status.textContent = "Sync error";
+            status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+          }
+        }, (error) => {
+          let errorText = "GPS unavailable";
+          if (error.code === 1) { // PERMISSION_DENIED
+            errorText = "GPS denied";
+          } else if (error.code === 2) { // POSITION_UNAVAILABLE
+            errorText = "GPS unavailable";
+          } else if (error.code === 3) { // TIMEOUT
+            errorText = "GPS timeout";
+          } else if (error.message) {
+            errorText = error.message.includes("available") ? "GPS unavailable" : error.message;
+          }
+          status.textContent = errorText;
+          status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+        }, {
+          enableHighAccuracy: false,
+          timeout: 8000,
+          maximumAge: 300000 // 5 minutes cache
+        });
+      });
+
+      // Split Calculator select event
+      const splitSelect = document.getElementById('split-distance-select');
+      splitSelect.addEventListener('change', (e) => {
+        state.splitDistance = parseFloat(e.target.value);
+        recalculate();
+      });
+
+      // View Mode Toggle click handler (Pace vs. Speed)
+      const viewModeToggle = document.getElementById('view-mode-toggle');
+      if (viewModeToggle) {
+        viewModeToggle.addEventListener('click', (e) => {
+          const button = e.target.closest('button');
+          if (!button) return;
+
+          const mode = button.getAttribute('data-mode');
+          state.viewMode = mode;
+          saveState();
+
+          // Update toggle buttons styling
+          viewModeToggle.querySelectorAll('button').forEach((btn) => {
+            const btnMode = btn.getAttribute('data-mode');
+            if (btnMode === mode) {
+              btn.className = "px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-brand-accent text-brand-dark transition duration-150 shadow-sm cursor-pointer border-none";
+            } else {
+              btn.className = "px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent";
+            }
+          });
+
+          recalculate();
+        });
+      }
+
+      // Unit Toggle click handler (Metric vs. Imperial)
+      const unitToggle = document.getElementById('unit-toggle');
+      if (unitToggle) {
+        unitToggle.addEventListener('click', (e) => {
+          const button = e.target.closest('button');
+          if (!button) return;
+
+          const unit = button.getAttribute('data-unit');
+          state.unit = unit;
+          saveState();
+
+          // Update toggle buttons styling
+          unitToggle.querySelectorAll('button').forEach((btn) => {
+            const btnUnit = btn.getAttribute('data-unit');
+            if (btnUnit === unit) {
+              btn.className = "px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-brand-accent text-brand-dark transition duration-150 shadow-sm cursor-pointer border-none";
+            } else {
+              btn.className = "px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent";
+            }
+          });
+
+          recalculate();
+        });
+      }
+
+      // TAB CONTROLLER
+      function switchTab(tabId) {
+        state.activeTab = tabId;
+        saveState();
+
+        // Toggle tab content visibility
+        const tabs = ['config', 'paces', 'insights'];
+        tabs.forEach((tab) => {
+          const contentEl = document.getElementById(`tab-content-${tab}`);
+          if (contentEl) {
+            if (tab === tabId) {
+              contentEl.classList.remove('hidden');
+              // If we are showing paces, we need to redraw the D3 chart to make sure its sizing is perfectly correct (since it might have been rendered while hidden)
+              if (tab === 'paces' && lastComputedPaces) {
+                setTimeout(() => {
+                  renderD3PaceShiftChart(lastComputedPaces);
+                }, 50);
+              }
+            } else {
+              contentEl.classList.add('hidden');
+            }
+          }
+        });
+
+        // Update active styling of floating bottom nav buttons
+        const bottomNavEl = document.getElementById('floating-bottom-nav');
+        if (bottomNavEl) {
+          bottomNavEl.querySelectorAll('button').forEach((btn) => {
+            const btnTab = btn.getAttribute('data-tab');
+            if (btnTab === tabId) {
+              btn.className = "flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-brand-accent text-brand-dark transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none shadow-lg shadow-brand-accent/20";
+            } else {
+              btn.className = "flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent";
+            }
+          });
+        }
+      }
+
+      // Add floating bottom tab click listeners
+      const floatingBottomNav = document.getElementById('floating-bottom-nav');
+      if (floatingBottomNav) {
+        floatingBottomNav.addEventListener('click', (e) => {
+          const button = e.target.closest('button');
+          if (!button) return;
+          const tabId = button.getAttribute('data-tab');
+          switchTab(tabId);
+        });
+      }
+
+      // Weather Model Switcher click handler (WIV vs. Heat Index)
+      const weatherModelToggle = document.getElementById('weather-model-toggle');
+      if (weatherModelToggle) {
+        weatherModelToggle.addEventListener('click', (e) => {
+          const button = e.target.closest('button');
+          if (!button) return;
+
+          const model = button.getAttribute('data-model');
+          state.weatherModel = model;
+
+          // Update styling
+          weatherModelToggle.querySelectorAll('button').forEach((btn) => {
+            const btnModel = btn.getAttribute('data-model');
+            if (btnModel === model) {
+              btn.className = "px-2.5 py-1.5 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition duration-150 cursor-pointer border-none shadow-sm";
+            } else {
+              btn.className = "px-2.5 py-1.5 text-center text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent";
+            }
+          });
+
+          recalculate();
+        });
+      }
+
+      // Copy Clipboard / Share Pacing Card
+      document.getElementById('copy-clipboard-btn').addEventListener('click', () => {
+        const vdotVal = document.getElementById('vdot-score').textContent;
+        const temp = state.temperatureC;
+        const rh = state.relativeHumidity;
+        const multi = document.getElementById('current-multiplier-badge').textContent;
+        const level = document.getElementById('runner-level').textContent;
+        
+        // Build readable text card
+        let shareText = `=== VDOT ATHLETIC PROFILE CARD ===\n`;
+        shareText += `VDOT Score: ${vdotVal} (${level})\n`;
+        shareText += `Weather Conditions: ${temp}°C / ${(temp*1.8+32).toFixed(0)}°F, ${rh}% Humidity\n`;
+        shareText += `Degradation Multiplier: ${multi}\n\n`;
+        shareText += `Baseline Equivalents:\n`;
+        shareText += `- 5K: ${document.getElementById('equiv-5k').textContent} (${document.getElementById('equiv-5k-weather').textContent})\n`;
+        shareText += `- 10K: ${document.getElementById('equiv-10k').textContent} (${document.getElementById('equiv-10k-weather').textContent})\n`;
+        shareText += `- Half: ${document.getElementById('equiv-half').textContent} (${document.getElementById('equiv-half-weather').textContent})\n`;
+        shareText += `- Full: ${document.getElementById('equiv-full').textContent} (${document.getElementById('equiv-full-weather').textContent})\n\n`;
+        shareText += `Coaching Advice: ${document.getElementById('coaching-pacing').textContent}\n`;
+        shareText += `==================================`;
+
+        navigator.clipboard.writeText(shareText).then(() => {
+          const btn = document.getElementById('copy-clipboard-btn');
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i><span class="text-emerald-600">Copied!</span>`;
+          lucide.createIcons();
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            lucide.createIcons();
+          }, 2000);
+        }).catch(err => {
+          alert('Could not copy card text. Please try selecting and copying manually.');
+        });
+      });
+
+      // Window resize debounced listener to redraw D3 chart responsively
+      let d3ResizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(d3ResizeTimeout);
+        d3ResizeTimeout = setTimeout(() => {
+          if (lastComputedPaces) {
+            renderD3PaceShiftChart(lastComputedPaces);
+          }
+        }, 200);
+      });
+
+      // Try to load persisted user state
+      const hasSavedState = loadState();
+      
+      if (hasSavedState) {
+        document.getElementById('custom-distance').value = Math.round(state.distanceMeters);
+        document.getElementById('time-hours').value = state.hours;
+        document.getElementById('time-minutes').value = state.minutes;
+        document.getElementById('time-seconds').value = state.seconds;
+        document.getElementById('temp-slider').value = state.temperatureC;
+        document.getElementById('humidity-slider').value = state.relativeHumidity;
+        
+        // Update helper displays
+        updateDistanceHelper(state.distanceMeters);
+        updateTempSliderDisplay(state.temperatureC);
+        updateHumiditySliderDisplay(state.relativeHumidity);
+      }
+
+      // Sync active button highlights initially
+      updateDistancePresetsUI(state.distanceMeters);
+      updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
+
+      // Initialize view mode and unit toggles visual states based on loaded state
+      if (viewModeToggle) {
+        viewModeToggle.querySelectorAll('button').forEach((btn) => {
+          const btnMode = btn.getAttribute('data-mode');
+          if (btnMode === state.viewMode) {
+            btn.className = "px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-brand-accent text-brand-dark transition duration-150 shadow-sm cursor-pointer border-none";
+          } else {
+            btn.className = "px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent";
+          }
+        });
+      }
+      if (unitToggle) {
+        unitToggle.querySelectorAll('button').forEach((btn) => {
+          const btnUnit = btn.getAttribute('data-unit');
+          if (btnUnit === state.unit) {
+            btn.className = "px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-brand-accent text-brand-dark transition duration-150 shadow-sm cursor-pointer border-none";
+          } else {
+            btn.className = "px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent";
+          }
+        });
+      }
+
+      // Initialize tabs
+      switchTab(state.activeTab || 'config');
+
+      // First Calculation load
+      recalculate();
+    });
+  </script>
+
+  <!-- PWA Service Worker Registration Block -->
+  <script id="service-worker-script">
+    const swCode = `
+      const CACHE_NAME = 'vdot-thermal-cache-v1';
+      const ASSETS = [
+        '/',
+        '/index.html',
+        'https://cdn.tailwindcss.com',
+        'https://unpkg.com/lucide@latest',
+        'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap'
+      ];
+
+      self.addEventListener('install', (event) => {
+        self.skipWaiting();
+        event.waitUntil(
+          caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(ASSETS);
+          })
+        );
+      });
+
+      self.addEventListener('activate', (event) => {
+        event.waitUntil(self.clients.claim());
+      });
+
+      self.addEventListener('fetch', (event) => {
+        event.respondWith(
+          caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            return fetch(event.request);
+          })
+        );
+      });
+    `;
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        try {
+          const blob = new Blob([swCode], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(swUrl)
+            .then(reg => console.log('PWA Service Worker registered successfully!', reg))
+            .catch(err => console.warn('Service Worker registration skipped (expected in sandboxed frames):', err));
+        } catch (e) {
+          console.warn('Could not initialize service worker:', e);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
