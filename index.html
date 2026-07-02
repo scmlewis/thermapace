@@ -1875,6 +1875,11 @@
           }
         });
 
+        // Smooth scroll to top when switching tabs
+        if (window.scrollY > 0) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         // Update active styling of floating bottom nav buttons
         const bottomNavEl = document.getElementById('floating-bottom-nav');
         if (bottomNavEl) {
