@@ -286,19 +286,6 @@
           </div>
    
           <div class="flex flex-col gap-5">
-            <!-- Weather Model Mode Toggle -->
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pacing Model Reference</label>
-              <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800/60" id="weather-model-toggle">
-                <button type="button" data-model="wiv" class="px-2 py-2 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition duration-150 cursor-pointer border-none">
-                  WIV (Temp+DewPt)
-                </button>
-                <button type="button" data-model="heat_index" class="px-2 py-2 text-center text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent">
-                  Heat Index (HI)
-                </button>
-              </div>
-            </div>
-
             <!-- Smart Weather Sync -->
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 flex flex-col gap-2.5 shadow-inner">
               <div class="flex items-center justify-between">
@@ -325,10 +312,13 @@
               </div>
             </div>
 
-            <!-- Weather Presets -->
+            <!-- Weather Presets (collapsed by default) -->
             <div>
-              <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Weather Presets</label>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="weather-presets">
+              <button type="button" id="weather-presets-toggle" class="flex items-center gap-2 w-full text-left cursor-pointer bg-transparent border-none p-0 hover:opacity-80 transition">
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" id="weather-presets-chevron"></i>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Weather Presets</span>
+              </button>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 hidden" id="weather-presets">
                 <button type="button" data-temp="15" data-rh="50" class="px-3 py-2.5 text-left text-xs font-bold rounded-lg bg-brand-panelLight border border-brand-accent/20 text-brand-accent hover:bg-slate-800 transition flex items-center justify-between cursor-pointer">
                   <span>Standard Baseline</span>
                   <span class="font-mono text-[10px] opacity-90">15°C, 50%</span>
@@ -724,7 +714,6 @@
         relativeHumidity: 50,
         splitDistance: 1000, // default to 1km
         viewMode: 'pace', // 'pace' or 'speed'
-        weatherModel: 'wiv', // 'wiv' or 'heat_index'
         activeTab: 'config',
         unit: 'metric' // 'metric' or 'imperial'
       };
@@ -738,7 +727,6 @@
           seconds: state.seconds,
           temperatureC: state.temperatureC,
           relativeHumidity: state.relativeHumidity,
-          weatherModel: state.weatherModel,
           viewMode: state.viewMode,
           splitDistance: state.splitDistance,
           activeTab: state.activeTab,
@@ -757,7 +745,6 @@
             if (data.seconds !== undefined) state.seconds = data.seconds;
             if (data.temperatureC !== undefined) state.temperatureC = data.temperatureC;
             if (data.relativeHumidity !== undefined) state.relativeHumidity = data.relativeHumidity;
-            if (data.weatherModel !== undefined) state.weatherModel = data.weatherModel;
             if (data.viewMode !== undefined) state.viewMode = data.viewMode;
             if (data.splitDistance !== undefined) state.splitDistance = data.splitDistance;
             if (data.activeTab !== undefined) state.activeTab = data.activeTab;
@@ -859,29 +846,16 @@
         // Convert heat index Fahrenheit back to Celsius
         const hiC = (hiF - 32) * 5/9;
         
-        // Determine pace adjustment multiplier based on selected model
+        // Determine pace adjustment multiplier using WIV model
         let m_pace = 1.0;
-        if (state.weatherModel === 'heat_index') {
-          if (hiC <= 20) {
-            m_pace = 1.0;
-          } else if (hiC <= 27) {
-            m_pace = 1.00 + 0.0020 * (hiC - 20);
-          } else if (hiC <= 35) {
-            m_pace = 1.014 + 0.0050 * (hiC - 27);
-          } else {
-            m_pace = 1.054 + 0.0100 * (hiC - 35);
-          }
+        if (wiv <= 25) {
+          m_pace = 1.0;
+        } else if (wiv <= 40) {
+          m_pace = 1.00 + 0.0015 * (wiv - 25);
+        } else if (wiv <= 55) {
+          m_pace = 1.022 + 0.0035 * (wiv - 40);
         } else {
-          // Empirical WIV Model
-          if (wiv <= 25) {
-            m_pace = 1.0;
-          } else if (wiv <= 40) {
-            m_pace = 1.00 + 0.0015 * (wiv - 25);
-          } else if (wiv <= 55) {
-            m_pace = 1.022 + 0.0035 * (wiv - 40);
-          } else {
-            m_pace = 1.075 + 0.0060 * (wiv - 55);
-          }
+          m_pace = 1.075 + 0.0060 * (wiv - 55);
         }
         
         return { t_dp, wiv, hiC, m_pace };
@@ -908,21 +882,24 @@
       function paceToMileFormattedString(secPerKm) {
         if (isNaN(secPerKm) || !isFinite(secPerKm) || secPerKm <= 0) return "--:--";
         const secPerMile = secPerKm * 1.609344;
-        const min = Math.floor(secPerMile / 60);
-        const sec = Math.round(secPerMile % 60);
+        let min = Math.floor(secPerMile / 60);
+        let sec = Math.round(secPerMile % 60);
+        if (sec === 60) { sec = 0; min++; }
         return `${min}:${sec.toString().padStart(2, '0')} /mi`;
       }
 
       function formatPaceNoUnit(secPerKm, targetUnit) {
         if (isNaN(secPerKm) || !isFinite(secPerKm) || secPerKm <= 0) return "--:--";
         if (targetUnit === 'metric') {
-          const min = Math.floor(secPerKm / 60);
-          const sec = Math.round(secPerKm % 60);
+          let min = Math.floor(secPerKm / 60);
+          let sec = Math.round(secPerKm % 60);
+          if (sec === 60) { sec = 0; min++; }
           return `${min}:${sec.toString().padStart(2, '0')}`;
         } else {
           const secPerMile = secPerKm * 1.609344;
-          const min = Math.floor(secPerMile / 60);
-          const sec = Math.round(secPerMile % 60);
+          let min = Math.floor(secPerMile / 60);
+          let sec = Math.round(secPerMile % 60);
+          if (sec === 60) { sec = 0; min++; }
           return `${min}:${sec.toString().padStart(2, '0')}`;
         }
       }
@@ -931,8 +908,9 @@
         if (isNaN(totalSeconds) || !isFinite(totalSeconds) || totalSeconds <= 0) return "--:--";
         const hours = Math.floor(totalSeconds / 3600);
         const remSecs = totalSeconds % 3600;
-        const minutes = Math.floor(remSecs / 60);
-        const seconds = Math.round(remSecs % 60);
+        let minutes = Math.floor(remSecs / 60);
+        let seconds = Math.round(remSecs % 60);
+        if (seconds === 60) { seconds = 0; minutes++; }
         
         if (hours > 0) {
           return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
@@ -1192,44 +1170,25 @@
           dewLabelEl.className = "block text-[10px] font-bold text-rose-400";
         }
 
-        // WIV/Heat Index Category and Label
+        // WIV Category and Label
         const wivLabelEl = document.getElementById('wiv-label');
         const metricTitleIndicator = document.getElementById('metric-title-indicator');
         
-        if (state.weatherModel === 'heat_index') {
-          if (metricTitleIndicator) metricTitleIndicator.textContent = "Calculated Heat Index";
-          document.getElementById('wiv-val').textContent = `${weather.hiC.toFixed(1)}°C`;
-          
-          if (weather.hiC <= 27) {
-            wivLabelEl.textContent = "Ideal Heat Range";
-            wivLabelEl.className = "block text-[10px] font-bold text-emerald-400";
-          } else if (weather.hiC <= 32) {
-            wivLabelEl.textContent = "Caution (Fatigue Possible)";
-            wivLabelEl.className = "block text-[10px] font-bold text-amber-400";
-          } else if (weather.hiC <= 41) {
-            wivLabelEl.textContent = "Extreme Caution (Strain)";
-            wivLabelEl.className = "block text-[10px] font-bold text-orange-400";
-          } else {
-            wivLabelEl.textContent = "Danger (Heat Stroke Risk)";
-            wivLabelEl.className = "block text-[10px] font-bold text-rose-400";
-          }
+        if (metricTitleIndicator) metricTitleIndicator.textContent = "Weather Impact Index";
+        document.getElementById('wiv-val').textContent = wiv.toFixed(1);
+        
+        if (wiv <= 25) {
+          wivLabelEl.textContent = "Ideal Racing Conditions";
+          wivLabelEl.className = "block text-[10px] font-bold text-emerald-400";
+        } else if (wiv <= 40) {
+          wivLabelEl.textContent = "Moderate Impact (Noticeable)";
+          wivLabelEl.className = "block text-[10px] font-bold text-amber-400";
+        } else if (wiv <= 55) {
+          wivLabelEl.textContent = "High Stress (Pace Affected)";
+          wivLabelEl.className = "block text-[10px] font-bold text-orange-400";
         } else {
-          if (metricTitleIndicator) metricTitleIndicator.textContent = "Weather Impact Index";
-          document.getElementById('wiv-val').textContent = wiv.toFixed(1);
-          
-          if (wiv <= 25) {
-            wivLabelEl.textContent = "Ideal Racing Conditions";
-            wivLabelEl.className = "block text-[10px] font-bold text-emerald-400";
-          } else if (wiv <= 40) {
-            wivLabelEl.textContent = "Moderate Impact (Noticeable)";
-            wivLabelEl.className = "block text-[10px] font-bold text-amber-400";
-          } else if (wiv <= 55) {
-            wivLabelEl.textContent = "High Stress (Pace Affected)";
-            wivLabelEl.className = "block text-[10px] font-bold text-orange-400";
-          } else {
-            wivLabelEl.textContent = "Extreme Stress / Pace Degraded";
-            wivLabelEl.className = "block text-[10px] font-bold text-rose-400";
-          }
+          wivLabelEl.textContent = "Extreme Stress / Pace Degraded";
+          wivLabelEl.className = "block text-[10px] font-bold text-rose-400";
         }
 
         // Calculate Equivalent race performance times and weather-degraded alternatives
@@ -1905,27 +1864,14 @@
         });
       }
 
-      // Weather Model Switcher click handler (WIV vs. Heat Index)
-      const weatherModelToggle = document.getElementById('weather-model-toggle');
-      if (weatherModelToggle) {
-        weatherModelToggle.addEventListener('click', (e) => {
-          const button = e.target.closest('button');
-          if (!button) return;
-
-          const model = button.getAttribute('data-model');
-          state.weatherModel = model;
-
-          // Update styling
-          weatherModelToggle.querySelectorAll('button').forEach((btn) => {
-            const btnModel = btn.getAttribute('data-model');
-            if (btnModel === model) {
-              btn.className = "px-2.5 py-1.5 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition duration-150 cursor-pointer border-none shadow-sm";
-            } else {
-              btn.className = "px-2.5 py-1.5 text-center text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition duration-150 cursor-pointer border border-transparent bg-transparent";
-            }
-          });
-
-          recalculate();
+      // Weather Presets toggle expand/collapse
+      const presetsToggle = document.getElementById('weather-presets-toggle');
+      const presetsContainer = document.getElementById('weather-presets');
+      const presetsChevron = document.getElementById('weather-presets-chevron');
+      if (presetsToggle && presetsContainer && presetsChevron) {
+        presetsToggle.addEventListener('click', () => {
+          const isHidden = presetsContainer.classList.toggle('hidden');
+          presetsChevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
         });
       }
 
