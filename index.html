@@ -1792,9 +1792,9 @@
           }
         });
 
-        // Smooth scroll to top when switching tabs
+        // Scroll to top instantly when switching tabs
         if (window.scrollY > 0) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.scrollTo(0, 0);
         }
 
         // Update active styling of floating bottom nav buttons
