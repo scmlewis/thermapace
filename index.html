@@ -1854,14 +1854,17 @@
         state.activeTab = tabId;
         saveState();
 
-        // Toggle tab content visibility
         const tabs = ['config', 'paces', 'insights'];
         tabs.forEach((tab) => {
           const contentEl = document.getElementById(`tab-content-${tab}`);
           if (contentEl) {
             if (tab === tabId) {
               contentEl.classList.remove('hidden');
-              // If we are showing paces, we need to redraw the D3 chart to make sure its sizing is perfectly correct (since it might have been rendered while hidden)
+              contentEl.classList.remove('tab-animate-in');
+              // Force reflow to restart animation
+              void contentEl.offsetWidth;
+              contentEl.classList.add('tab-animate-in');
+              // Redraw D3 chart when switching to paces tab
               if (tab === 'paces' && lastComputedPaces) {
                 setTimeout(() => {
                   renderD3PaceShiftChart(lastComputedPaces);
@@ -1869,6 +1872,7 @@
               }
             } else {
               contentEl.classList.add('hidden');
+              contentEl.classList.remove('tab-animate-in');
             }
           }
         });
@@ -1884,9 +1888,9 @@
           bottomNavEl.querySelectorAll('button').forEach((btn) => {
             const btnTab = btn.getAttribute('data-tab');
             if (btnTab === tabId) {
-              btn.className = "flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-brand-accent text-brand-dark transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none shadow-lg shadow-brand-accent/20";
+              btn.className = "btn-press flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-brand-accent text-brand-dark transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none shadow-lg shadow-brand-accent/20";
             } else {
-              btn.className = "flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent";
+              btn.className = "btn-press flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent";
             }
           });
         }
