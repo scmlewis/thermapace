@@ -304,7 +304,7 @@
           
           <!-- Large VDOT Score & Percentile Badge -->
           <div class="flex flex-col sm:flex-row items-center gap-5 bg-slate-900/40 border border-slate-800/60 rounded-xl p-5 shadow-inner">
-            <div class="relative flex items-center justify-center w-24 h-24 bg-gradient-to-tr from-brand-accent to-blue-600 rounded-full shadow-lg shrink-0 shadow-brand-accent/20">
+            <div class="relative flex items-center justify-center w-24 h-24 bg-gradient-to-tr from-brand-accent to-blue-600 rounded-full shadow-lg shrink-0 shadow-brand-accent/20" id="vdot-circle">
               <div class="absolute inset-1.5 bg-brand-panel rounded-full flex flex-col items-center justify-center text-center">
                 <span class="text-3xl font-black text-brand-accent font-mono tracking-tighter" id="vdot-score">--</span>
                 <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase -mt-1">VDOT</span>
@@ -1145,6 +1145,14 @@
 
       // Main Calculation & DOM Updater
       function recalculate() {
+        // Computation cue
+        const vdotCircle = document.getElementById('vdot-circle');
+        if (vdotCircle) {
+          vdotCircle.classList.remove('compute-pulse');
+          void vdotCircle.offsetWidth;
+          vdotCircle.classList.add('compute-pulse');
+        }
+
         const distance = state.distanceMeters;
         const h = state.hours;
         const m = state.minutes;
