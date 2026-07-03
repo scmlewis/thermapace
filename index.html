@@ -957,6 +957,26 @@
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
       }
 
+      // Animated number count-up helper
+      function animateCountUp(element, targetValue, duration, decimals) {
+        if (!element) return;
+        const startValue = parseFloat(element.textContent) || 0;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease-out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = startValue + (targetValue - startValue) * eased;
+          element.textContent = current.toFixed(decimals);
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          }
+        }
+        requestAnimationFrame(update);
+      }
+
       // D3.js Pace Shift Bar Chart
       function renderD3PaceShiftChart(computedPaces) {
         const placeholder = document.getElementById('chart-placeholder');
@@ -1161,12 +1181,16 @@
 
         // Display VDOT
         const vdotDisplayVal = isNaN(vdot) || !isFinite(vdot) ? "--" : vdot.toFixed(1);
-        document.getElementById('vdot-score').textContent = vdotDisplayVal;
+        const vdotEl = document.getElementById('vdot-score');
+        animateCountUp(vdotEl, vdot, 300, vdot % 1 === 0 ? 0 : 1);
 
         // Calculate Runner Level
         const level = getRunnerLevel(vdot);
         const runnerLevelEl = document.getElementById('runner-level');
         runnerLevelEl.textContent = level.name;
+        runnerLevelEl.classList.remove('fade-swap');
+        void runnerLevelEl.offsetWidth;
+        runnerLevelEl.classList.add('fade-swap');
         
         // Dynamically style runner level classes for dark mode
         if (vdot < 45) {
@@ -1187,8 +1211,24 @@
         const m_pace = weather.m_pace;
 
         // Display Ambient Calculations
-        document.getElementById('dew-point-val').textContent = `${t_dp.toFixed(1)}°C / ${(t_dp * 1.8 + 32).toFixed(1)}°F`;
+        const dewEl = document.getElementById('dew-point-val');
+        const dewTarget = t_dp;
+        const dewDuration = 200;
+        const dewStartTime = performance.now();
+        function updateDew(now) {
+          const elapsed = now - dewStartTime;
+          const progress = Math.min(elapsed / dewDuration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = dewTarget * eased;
+          dewEl.textContent = `${current.toFixed(1)}°C / ${(current * 1.8 + 32).toFixed(1)}°F`;
+          if (progress < 1) requestAnimationFrame(updateDew);
+        }
+        requestAnimationFrame(updateDew);
         document.getElementById('current-multiplier-badge').textContent = `x${m_pace.toFixed(3)} Penalty`;
+        const badgeEl = document.getElementById('current-multiplier-badge');
+        badgeEl.classList.remove('pulse-glow');
+        void badgeEl.offsetWidth;
+        badgeEl.classList.add('pulse-glow');
         
         // Dew Point Category Label (High Contrast Brighter in Dark Mode)
         const dewLabelEl = document.getElementById('dew-point-label');
@@ -1214,7 +1254,7 @@
         const metricTitleIndicator = document.getElementById('metric-title-indicator');
         
         if (metricTitleIndicator) metricTitleIndicator.textContent = "Weather Impact Index";
-        document.getElementById('wiv-val').textContent = wiv.toFixed(1);
+        animateCountUp(document.getElementById('wiv-val'), wiv, 200, 1);
         
         if (wiv <= 25) {
           wivLabelEl.textContent = "Ideal Racing Conditions";
