@@ -8,10 +8,8 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React 19" />
     <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
     <img src="https://img.shields.io/badge/D3.js-7-F9A03C?logo=d3.js&logoColor=white" alt="D3.js 7" />
-    <img src="https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white" alt="Vite 6" />
     <img src="https://img.shields.io/badge/license-Apache_2.0-blue" alt="License" />
   </p>
 
@@ -46,9 +44,9 @@ ThermaPace VDOT calculates **precise training paces** based on the Jack Daniels 
 
 | Layer | Technology |
 |-------|-----------|
-| UI | HTML, Tailwind CSS 4, Lucide Icons |
-| Runtime | Vite 6 + React 19 |
-| Visualization | D3.js 7 |
+| UI | Vanilla JavaScript (ES6+), Tailwind CSS 4 (CDN), Lucide Icons (CDN) |
+| Visualization | D3.js 7 (CDN) |
+| Dev Server | Vite 6 |
 | Weather Data | Open-Meteo API (free, no key required) |
 | Geolocation | Browser Geolocation API |
 | Persistence | localStorage |
@@ -79,7 +77,6 @@ The app runs at `http://localhost:3000`.
 | `npm run dev` | Start development server (port 3000) |
 | `npm run build` | Build for production to `dist/` |
 | `npm run preview` | Preview production build locally |
-| `npm run lint` | Run TypeScript type checking |
 
 ## License
 
