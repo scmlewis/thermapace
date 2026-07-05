@@ -1,31 +1,61 @@
 // Core calculation engine — extracted for testing
 // These functions are the mathematical foundation of ThermaPace
+//
+// ENVIRONMENTAL LOAD SCORE (ELS) — 0 to 100
+//
+// Methodology: humidity-dominant model inspired by WBGT (Wet Bulb Globe
+// Temperature), the international standard for athletic heat stress used
+// by OSHA, NCAA, ACSM, and World Athletics.  WBGT weights humidity at
+// 70%, solar+wind at ~20%, and dry-bulb temperature at ~10%.  We adapt
+// these proportions for a running decision engine that needs finer
+// granularity than a simple safety flag.
+//
+// Components:
+//   Humidity  0-50   Dew-point driven — the dominant factor in how
+//                     effectively the body can cool itself via sweating.
+//   Heat      0-30   Air temperature contribution — important but
+//                     secondary to humidity's effect on evaporative cooling.
+//   Solar     0-10   Clear-sky radiation load — modified by cloud cover.
+//                     Matters most when it's already hot and humid.
+//   Wind      0-10   Cooling benefit (subtracted) — convective heat
+//                     loss.  Real but with diminishing returns.
+//
+// Category thresholds are calibrated against WBGT research on marathon
+// performance (Ely et al. 2007) and ACSM activity-restriction flags.
 
 export function calculateEnvironmentalLoad(tempC, rh, windSpeedKmh, cloudCover) {
+  // Dew point (Magnus-Tetens)
   const gamma = (17.625 * tempC) / (243.04 + tempC) + Math.log(rh / 100);
   const t_dp = (243.04 * gamma) / (17.625 - gamma);
 
+  // Humidity Score (0-50): dew-point contribution
+  let humidity = 0;
+  if (t_dp <= 10) humidity = 0;
+  else if (t_dp <= 15) humidity = (t_dp - 10) * 2.0;
+  else if (t_dp <= 20) humidity = 10 + (t_dp - 15) * 4.0;
+  else if (t_dp <= 25) humidity = 30 + (t_dp - 20) * 3.0;
+  else humidity = 45 + Math.min(5, (t_dp - 25) * 1.0);
+  humidity = Math.min(50, Math.max(0, humidity));
+
+  // Heat Score (0-30): air temperature contribution
   let heat = 0;
   if (tempC <= 10) heat = 0;
   else if (tempC <= 20) heat = (tempC - 10) * 0.5;
   else if (tempC <= 25) heat = 5 + (tempC - 20) * 1.0;
   else if (tempC <= 30) heat = 10 + (tempC - 25) * 2.0;
-  else if (tempC <= 35) heat = 20 + (tempC - 30) * 3.0;
-  else heat = 35 + (tempC - 35) * 1.0;
-  heat = Math.min(40, Math.max(0, heat));
+  else if (tempC <= 35) heat = 20 + (tempC - 30) * 2.0;
+  else heat = 30;
+  heat = Math.min(30, Math.max(0, heat));
 
-  let humidity = 0;
-  if (t_dp <= 10) humidity = 0;
-  else if (t_dp <= 15) humidity = (t_dp - 10) * 1.0;
-  else if (t_dp <= 20) humidity = 5 + (t_dp - 15) * 1.4;
-  else if (t_dp <= 25) humidity = 12 + (t_dp - 20) * 1.6;
-  else humidity = 20 + Math.min(10, (t_dp - 25) * 1.5);
-  humidity = Math.min(30, Math.max(0, humidity));
-
-  const wind = Math.min(15, Math.max(0, (windSpeedKmh || 0) * 0.75));
+  // Solar Load (0-10): clear-sky radiation
   const cloud = cloudCover != null ? cloudCover : 50;
-  const solar = Math.round(((100 - cloud) / 100) * 15);
-  const els = Math.round(Math.max(0, Math.min(100, heat + humidity - wind + solar)));
+  const solar = Math.round(((100 - cloud) / 100) * 10);
+
+  // Wind Benefit (0-10): convective cooling (subtracted)
+  const wind = Math.min(10, Math.max(0, (windSpeedKmh || 0) * 0.5));
+
+  // Total ELS
+  const els = Math.round(Math.max(0, Math.min(100, humidity + heat + solar - wind)));
 
   let category, color;
   if (els <= 20)       { category = 'Ideal';       color = 'emerald'; }

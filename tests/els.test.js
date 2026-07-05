@@ -17,14 +17,14 @@ describe('calculateEnvironmentalLoad', () => {
   });
 
   it('returns Demanding for hot, humid conditions', () => {
-    const r = calculateEnvironmentalLoad(30, 70, 5, 20);
+    const r = calculateEnvironmentalLoad(28, 65, 5, 40);
     expect(r.els).toBeGreaterThan(40);
     expect(r.els).toBeLessThanOrEqual(60);
     expect(r.category).toBe('Demanding');
   });
 
   it('returns High Stress for very hot conditions', () => {
-    const r = calculateEnvironmentalLoad(35, 80, 0, 0);
+    const r = calculateEnvironmentalLoad(30, 70, 0, 0);
     expect(r.els).toBeGreaterThan(60);
     expect(r.els).toBeLessThanOrEqual(80);
     expect(r.category).toBe('High Stress');
@@ -47,7 +47,7 @@ describe('calculateEnvironmentalLoad', () => {
     const cloudy = calculateEnvironmentalLoad(30, 60, 0, 100);
     const clear = calculateEnvironmentalLoad(30, 60, 0, 0);
     expect(clear.els).toBeGreaterThan(cloudy.els);
-    expect(clear.solar).toBe(15);
+    expect(clear.solar).toBe(10);
     expect(cloudy.solar).toBe(0);
   });
 
@@ -82,7 +82,7 @@ describe('calculateEnvironmentalLoad', () => {
 
   it('handles edge case: 50C', () => {
     const r = calculateEnvironmentalLoad(50, 100, 0, 0);
-    expect(r.heat).toBe(40);
+    expect(r.heat).toBe(30);
     expect(r.els).toBeGreaterThan(0);
   });
 });
