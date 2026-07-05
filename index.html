@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThermaPace VDOT • Thermal Athletic Performance Engine</title>
   
-  <!-- Inline PWA Manifest Definition -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"ThermaPace VDOT","short_name":"ThermaPace","start_url":".","display":"standalone","background_color":"#0A0E1A","theme_color":"#06B6D4","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3062/3062634.png","sizes":"512x512","type":"image/png"}]}'>
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0A0E1A">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3062/3062634.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://cdn-icons-png.flaticon.com/512/3062/3062634.png">
 
   <!-- Inter, JetBrains Mono & Outfit Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -198,6 +200,11 @@
       box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.5);
     }
 
+    /* Progressive Disclosure details */
+    details summary::-webkit-details-marker { display: none; }
+    details summary::marker { display: none; content: ''; }
+    details[open] summary i { transform: rotate(90deg); }
+
     /* Reduced motion respect */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -233,7 +240,7 @@
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-5 lg:p-6 pb-28 sm:pb-28 lg:pb-12 flex flex-col gap-6">
 
     <!-- TAB 1 CONTENT: Config & Environment -->
-    <div id="tab-content-config" class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+    <div id="tab-content-config" role="tabpanel" aria-labelledby="tab-config" class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
       
       <!-- LEFT PANEL: Inputs (Event Performance & Weather Factors) -->
       <section class="lg:col-span-6 flex flex-col gap-6">
@@ -386,7 +393,7 @@
                   Search
                 </button>
                 <!-- GPS Sync Button -->
-                <button type="button" id="weather-gps-btn" class="btn-press px-3 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg transition text-xs font-black cursor-pointer flex items-center gap-1.5" title="Get Current Location Weather">
+                <button type="button" id="weather-gps-btn" class="btn-press px-3 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg transition text-xs font-black cursor-pointer flex items-center gap-1.5" title="Get Current Location Weather" aria-label="Get weather from GPS location">
                   <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
                   <span class="hidden xs:inline">GPS</span>
                 </button>
@@ -427,7 +434,7 @@
               </div>
               <div class="flex items-center gap-3">
                 <span class="text-[10px] font-bold text-slate-500 font-mono">0°C</span>
-                <input type="range" id="temp-slider" min="0" max="50" value="15" class="flex-1">
+                <input type="range" id="temp-slider" min="0" max="50" value="15" aria-label="Temperature in Celsius" class="flex-1">
                 <span class="text-[10px] font-bold text-slate-500 font-mono">50°C</span>
               </div>
             </div>
@@ -440,7 +447,33 @@
               </div>
               <div class="flex items-center gap-3">
                 <span class="text-[10px] font-bold text-slate-500 font-mono">10%</span>
-                <input type="range" id="humidity-slider" min="10" max="100" value="50" class="flex-1">
+                <input type="range" id="humidity-slider" min="10" max="100" value="50" aria-label="Relative humidity percentage" class="flex-1">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">100%</span>
+              </div>
+            </div>
+
+            <!-- Wind Speed Slider -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between items-center">
+                <label for="wind-slider" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Wind Speed</label>
+                <span class="text-xs font-bold text-cyan-400 font-mono" id="wind-display">0 km/h</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">0</span>
+                <input type="range" id="wind-slider" min="0" max="60" value="0" aria-label="Wind speed in kilometers per hour" class="flex-1">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">60</span>
+              </div>
+            </div>
+
+            <!-- Cloud Cover Slider -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between items-center">
+                <label for="cloud-slider" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cloud Cover</label>
+                <span class="text-xs font-bold text-yellow-400 font-mono" id="cloud-display">50%</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] font-bold text-slate-500 font-mono">0%</span>
+                <input type="range" id="cloud-slider" min="0" max="100" value="50" aria-label="Cloud cover percentage" class="flex-1">
                 <span class="text-[10px] font-bold text-slate-500 font-mono">100%</span>
               </div>
             </div>
@@ -458,12 +491,27 @@
               </div>
             </div>
           </div>
+
+          <!-- Heat Tolerance Setting -->
+          <div class="mt-4 pt-3 border-t border-slate-800/50">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Heat Tolerance</span>
+                <span class="block text-[9px] text-slate-500 font-medium mt-0.5">Adjusts recommendation thresholds</span>
+              </div>
+              <div class="flex gap-1" id="heat-tolerance-group">
+                <button data-tol="low" class="btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-white transition cursor-pointer">Low</button>
+                <button data-tol="medium" class="btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-brand-accent/40 text-brand-accent bg-brand-accent/10 transition cursor-pointer">Med</button>
+                <button data-tol="high" class="btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-white transition cursor-pointer">High</button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
 
     <!-- TAB 2 CONTENT: Pacing Grid & Chart -->
-    <div id="tab-content-paces" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+    <div id="tab-content-paces" role="tabpanel" aria-labelledby="tab-paces" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
       
       <!-- LEFT COLUMN: Chart Analysis -->
       <section class="lg:col-span-5 flex flex-col gap-6">
@@ -541,7 +589,7 @@
                   <th class="px-5 py-4 text-center" id="th-shift">Pace Shift</th>
                 </tr>
               </thead>
-              <tbody id="zones-table-body" class="divide-y divide-slate-850 text-xs font-medium">
+              <tbody id="zones-table-body" class="divide-y divide-slate-700 text-xs font-medium">
                 <!-- Dynamically populated rows -->
                 <tr>
                   <td colspan="5" class="px-6 py-10 text-center text-slate-500 font-bold italic bg-[#121B2E]">
@@ -565,36 +613,44 @@
     </div>
 
     <!-- TAB 3 CONTENT: Advisory, Hydration & Laps -->
-    <div id="tab-content-insights" class="hidden flex flex-col gap-6 w-full">
+    <div id="tab-content-insights" role="tabpanel" aria-labelledby="tab-insights" class="hidden flex flex-col gap-6 w-full">
       
       <!-- FULL WIDTH: Dynamic Coaching Advisory & Sweat/Hydration Limits -->
       <section class="lg:col-span-12">
         <div class="card-premium bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50 grid grid-cols-1 md:grid-cols-12 gap-6" id="advisory-panel">
           
-          <!-- Left: Weather Penalty index Meter -->
+          <!-- Left: Environmental Load Score Meter -->
           <div class="md:col-span-4 flex flex-col justify-between bg-slate-900/40 rounded-xl p-5 border border-slate-800/80 shadow-inner">
             <div>
               <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                 <i data-lucide="gauge" class="w-4 h-4 text-brand-accent"></i>
-                <span>Thermal Penalty Index</span>
+                <span>Environmental Load</span>
               </h3>
-              <p class="text-[10px] text-slate-500 font-bold font-mono uppercase tracking-wider">Combined strain value</p>
+              <p class="text-[10px] text-slate-500 font-bold font-mono uppercase tracking-wider">0 = Ideal / 100 = Extreme</p>
             </div>
             
             <div class="my-5 text-center">
-              <span class="text-4xl font-black font-mono tracking-tighter text-white" id="advisory-penalty-pct">+0.0%</span>
-              <span class="block text-[11px] font-black text-brand-accent mt-1 uppercase font-mono tracking-wide animate-pulse" id="advisory-level-label">No Degradation (Ideal)</span>
+              <span class="text-5xl font-black font-mono tracking-tighter text-white" id="advisory-penalty-pct">0</span>
+              <span class="block text-[11px] font-black text-brand-accent mt-1 uppercase font-mono tracking-wide animate-pulse" id="advisory-level-label">Ideal</span>
             </div>
 
             <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden shadow-inner border border-slate-800/50">
-              <div id="advisory-progress-bar" class="bg-gradient-to-r from-blue-500 to-brand-accent h-full rounded-full transition-all duration-350" style="width: 0%"></div>
+              <div id="advisory-progress-bar" class="bg-gradient-to-r from-emerald-500 to-brand-accent h-full rounded-full transition-all duration-350" style="width: 0%"></div>
             </div>
             
             <div class="flex justify-between text-[9px] font-bold text-slate-500 mt-2 font-mono">
-              <span>25 Ideal</span>
-              <span>40 Mod</span>
-              <span>55 High</span>
-              <span>Extreme</span>
+              <span>0 Ideal</span>
+              <span>40 Warm</span>
+              <span>60 Demand</span>
+              <span>100</span>
+            </div>
+
+            <!-- ELS Factor Breakdown -->
+            <div id="els-breakdown" class="mt-3 pt-3 border-t border-slate-800/50 grid grid-cols-2 gap-1.5 text-[9px] font-mono font-bold">
+              <span class="text-orange-400">Heat +0</span>
+              <span class="text-amber-400">Humidity +0</span>
+              <span class="text-cyan-400">Wind -0</span>
+              <span class="text-yellow-400">Solar +0</span>
             </div>
           </div>
 
@@ -633,11 +689,96 @@
                 <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500 shrink-0"></i>
                 <span>Calculations verified by VDOT regression matrices</span>
               </span>
-              <button id="copy-clipboard-btn" class="btn-press flex items-center gap-2 px-4 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg font-black text-xs transition cursor-pointer">
-                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                <span>Copy Pacing Card</span>
-              </button>
+              <div class="flex items-center gap-2">
+                <button id="feedback-btn" class="btn-press flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-300 rounded-lg font-bold text-xs transition cursor-pointer" aria-label="Rate recommendation accuracy">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>Rate this</span>
+                </button>
+                <button id="copy-clipboard-btn" class="btn-press flex items-center gap-2 px-4 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg font-black text-xs transition cursor-pointer" aria-label="Copy pacing card to clipboard">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>Copy Pacing Card</span>
+                </button>
+              </div>
             </div>
+
+            <!-- Feedback Panel (hidden by default) -->
+            <div id="feedback-panel" class="mt-3 pt-3 border-t border-slate-800/50 hidden">
+              <p class="text-[11px] text-slate-400 font-bold mb-2">Was today's recommendation accurate?</p>
+              <div class="flex gap-2" id="feedback-options">
+                <button data-fb="conservative" class="btn-press px-3 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-amber-400 hover:border-amber-500/30 transition cursor-pointer">Too conservative</button>
+                <button data-fb="accurate" class="btn-press px-3 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition cursor-pointer">Just right</button>
+                <button data-fb="aggressive" class="btn-press px-3 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition cursor-pointer">Too aggressive</button>
+              </div>
+              <p class="text-[9px] text-slate-500 mt-1.5 font-mono" id="feedback-status"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FULL WIDTH: Training Recommendations Grid -->
+      <section class="lg:col-span-12">
+        <div class="card-premium bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80">
+            <i data-lucide="target" class="w-4 h-4 text-brand-accent"></i>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Today's Training Recommendations</h3>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3" id="recommendations-grid">
+            <!-- Populated by JS -->
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/50" id="actions-container" style="display:none;">
+            <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i data-lucide="list-checks" class="w-3.5 h-3.5 text-brand-accent"></i>
+              <span>Suggested Actions</span>
+            </h4>
+            <div class="flex flex-col gap-1.5" id="actions-list"></div>
+          </div>
+
+          <!-- Progressive Disclosure: Why? -->
+          <details class="mt-4 pt-3 border-t border-slate-800/50 group">
+            <summary class="text-[11px] font-black text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-300 transition flex items-center gap-1.5 select-none list-none">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-brand-accent transition-transform group-open:rotate-90"></i>
+              <span>Why these recommendations?</span>
+            </summary>
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div class="space-y-2">
+                <h5 class="font-bold text-white text-[11px] uppercase tracking-wide">Environmental Factors</h5>
+                <div class="space-y-1 font-mono text-[10px]" id="why-els-breakdown">
+                  <div class="flex justify-between"><span class="text-slate-400">Heat contribution:</span><span class="text-orange-400 font-bold" id="why-heat">+0</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Humidity contribution:</span><span class="text-amber-400 font-bold" id="why-humidity">+0</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Wind cooling effect:</span><span class="text-cyan-400 font-bold" id="why-wind">-0</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Solar load:</span><span class="text-yellow-400 font-bold" id="why-solar">+0</span></div>
+                  <div class="flex justify-between border-t border-slate-800 pt-1"><span class="text-white font-bold">Total ELS:</span><span class="text-white font-bold" id="why-els">0</span></div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <h5 class="font-bold text-white text-[11px] uppercase tracking-wide">Raw Conditions</h5>
+                <div class="space-y-1 font-mono text-[10px]" id="why-raw-data">
+                  <div class="flex justify-between"><span class="text-slate-400">Temperature:</span><span class="text-slate-200" id="why-temp">15°C</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Humidity:</span><span class="text-slate-200" id="why-rh">50%</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Dew Point:</span><span class="text-slate-200" id="why-dp">--</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Wind:</span><span class="text-slate-200" id="why-wind-val">0 km/h</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Cloud Cover:</span><span class="text-slate-200" id="why-cloud">50%</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Pace Multiplier:</span><span class="text-slate-200" id="why-mpace">x1.000</span></div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- FULL WIDTH: Hourly Forecast Timeline -->
+      <section class="lg:col-span-12" id="forecast-section" style="display:none;">
+        <div class="card-premium bg-brand-panel border border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xl transition-all duration-300 hover:border-slate-700/50">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80">
+            <i data-lucide="clock" class="w-4 h-4 text-brand-accent"></i>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Hourly Forecast</h3>
+          </div>
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
+            <span class="text-[11px] font-bold text-white" id="best-time-text">Best time to run: --</span>
+          </div>
+          <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-1.5" id="forecast-timeline">
+            <!-- Populated by JS -->
           </div>
         </div>
       </section>
@@ -762,20 +903,20 @@
   </main>
 
   <!-- Floating Bottom Navigation Bar (Sports-Tech Theme) -->
-  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-950/90 backdrop-blur-lg border border-slate-800/80 p-1.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex items-center gap-1 sm:gap-2 max-w-[95vw] w-max" id="floating-bottom-nav">
-    <button type="button" data-tab="config" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
-      <i data-lucide="sliders" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+  <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-950/90 backdrop-blur-lg border border-slate-800/80 p-1.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex items-center gap-1 sm:gap-2 max-w-[95vw] w-max" id="floating-bottom-nav" role="tablist" aria-label="Main navigation">
+    <button type="button" data-tab="config" role="tab" aria-selected="true" aria-controls="tab-content-config" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-accent whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
+      <i data-lucide="sliders" class="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true"></i>
       <span>Setup</span>
     </button>
-    <button type="button" data-tab="paces" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
-      <i data-lucide="activity" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+    <button type="button" data-tab="paces" role="tab" aria-selected="false" aria-controls="tab-content-paces" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-accent whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
+      <i data-lucide="activity" class="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true"></i>
       <span>Pacing</span>
     </button>
-    <button type="button" data-tab="insights" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
-      <i data-lucide="award" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+    <button type="button" data-tab="insights" role="tab" aria-selected="false" aria-controls="tab-content-insights" class="flex items-center gap-1.5 py-2 px-4 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-accent whitespace-nowrap border-none text-slate-400 hover:text-slate-200 bg-transparent">
+      <i data-lucide="award" class="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true"></i>
       <span>Advisory</span>
     </button>
-  </div>
+  </nav>
 
 
 
@@ -793,10 +934,14 @@
         seconds: 0,
         temperatureC: 15,
         relativeHumidity: 50,
-        splitDistance: 1000, // default to 1km
-        viewMode: 'pace', // 'pace' or 'speed'
+        windSpeedKmh: 0,
+        cloudCover: 50,
+        splitDistance: 1000,
+        viewMode: 'pace',
         activeTab: 'config',
-        unit: 'metric' // 'metric' or 'imperial'
+        unit: 'metric',
+        heatTolerance: 'medium',
+        forecast: null
       };
 
       // LocalStorage Persistence Helpers
@@ -808,10 +953,13 @@
           seconds: state.seconds,
           temperatureC: state.temperatureC,
           relativeHumidity: state.relativeHumidity,
+          windSpeedKmh: state.windSpeedKmh,
+          cloudCover: state.cloudCover,
           viewMode: state.viewMode,
           splitDistance: state.splitDistance,
           activeTab: state.activeTab,
-          unit: state.unit
+          unit: state.unit,
+          heatTolerance: state.heatTolerance
         }));
       }
 
@@ -826,10 +974,13 @@
             if (data.seconds !== undefined) state.seconds = data.seconds;
             if (data.temperatureC !== undefined) state.temperatureC = data.temperatureC;
             if (data.relativeHumidity !== undefined) state.relativeHumidity = data.relativeHumidity;
+            if (data.windSpeedKmh !== undefined) state.windSpeedKmh = data.windSpeedKmh;
+            if (data.cloudCover !== undefined) state.cloudCover = data.cloudCover;
             if (data.viewMode !== undefined) state.viewMode = data.viewMode;
             if (data.splitDistance !== undefined) state.splitDistance = data.splitDistance;
             if (data.activeTab !== undefined) state.activeTab = data.activeTab;
             if (data.unit !== undefined) state.unit = data.unit;
+            if (data.heatTolerance !== undefined) state.heatTolerance = data.heatTolerance;
             return true;
           } catch (e) {
             console.error("Error loading state", e);
@@ -883,28 +1034,157 @@
         return (tMin + tMax) / 2;
       }
 
-      // Thermal Degradation Engine
-      function calculateThermalPenalty(tempC, rh) {
-        // Step A: Calculate Dew Point (Tdp) using Magnus-Tetens approximation
+      // Environmental Load Calculator
+      // Computes a 0-100 score from environmental factors.
+      // Each factor has a bounded contribution. Wind cools (subtracts).
+      // ── Duplicated in src/engine.js for testing ── keep both in sync ──
+      function calculateEnvironmentalLoad(tempC, rh, windSpeedKmh, cloudCover) {
+        // Dew point (Magnus-Tetens)
         const gamma = (17.625 * tempC) / (243.04 + tempC) + Math.log(rh / 100);
         const t_dp = (243.04 * gamma) / (17.625 - gamma);
-        
-        // Step B: Weather Impact Value (WIV) = T + T_dp
-        const wiv = tempC + t_dp;
-        
-        // Determine pace adjustment multiplier using WIV model
-        let m_pace = 1.0;
-        if (wiv <= 25) {
-          m_pace = 1.0;
-        } else if (wiv <= 40) {
-          m_pace = 1.00 + 0.0015 * (wiv - 25);
-        } else if (wiv <= 55) {
-          m_pace = 1.022 + 0.0035 * (wiv - 40);
+
+        // Heat Score (0-40): non-linear temperature contribution
+        let heat = 0;
+        if (tempC <= 10) {
+          heat = 0;
+        } else if (tempC <= 20) {
+          heat = (tempC - 10) * 0.5;        // 0-5
+        } else if (tempC <= 25) {
+          heat = 5 + (tempC - 20) * 1.0;    // 5-10
+        } else if (tempC <= 30) {
+          heat = 10 + (tempC - 25) * 2.0;   // 10-20
+        } else if (tempC <= 35) {
+          heat = 20 + (tempC - 30) * 3.0;   // 20-35
         } else {
-          m_pace = 1.075 + 0.0060 * (wiv - 55);
+          heat = 35 + (tempC - 35) * 1.0;   // 35-40
         }
-        
-        return { t_dp, wiv, m_pace };
+        heat = Math.min(40, Math.max(0, heat));
+
+        // Humidity Score (0-30): dew point contribution
+        let humidity = 0;
+        if (t_dp <= 10) {
+          humidity = 0;
+        } else if (t_dp <= 15) {
+          humidity = (t_dp - 10) * 1.0;      // 0-5
+        } else if (t_dp <= 20) {
+          humidity = 5 + (t_dp - 15) * 1.4;  // 5-12
+        } else if (t_dp <= 25) {
+          humidity = 12 + (t_dp - 20) * 1.6; // 12-20
+        } else {
+          humidity = 20 + Math.min(10, (t_dp - 25) * 1.5); // 20-30
+        }
+        humidity = Math.min(30, Math.max(0, humidity));
+
+        // Wind Benefit (0-15): cooling effect reduces load
+        const wind = Math.min(15, Math.max(0, (windSpeedKmh || 0) * 0.75));
+
+        // Solar Load (0-15): clear sky = more load
+        const cloud = cloudCover != null ? cloudCover : 50;
+        const solar = Math.round(((100 - cloud) / 100) * 15);
+
+        // Total ELS
+        const els = Math.round(Math.max(0, Math.min(100, heat + humidity - wind + solar)));
+
+        // Category
+        let category, color;
+        if (els <= 20)       { category = "Ideal";       color = "emerald"; }
+        else if (els <= 40)  { category = "Warm";        color = "cyan"; }
+        else if (els <= 60)  { category = "Demanding";   color = "amber"; }
+        else if (els <= 80)  { category = "High Stress"; color = "orange"; }
+        else                 { category = "Extreme";     color = "rose"; }
+
+        // Pace multiplier derived from ELS (for backwards compatibility)
+        let m_pace = 1.0;
+        if (els <= 20) {
+          m_pace = 1.0;
+        } else if (els <= 40) {
+          m_pace = 1.0 + 0.001 * (els - 20);
+        } else if (els <= 60) {
+          m_pace = 1.02 + 0.0025 * (els - 40);
+        } else if (els <= 80) {
+          m_pace = 1.07 + 0.004 * (els - 60);
+        } else {
+          m_pace = 1.15 + 0.005 * (els - 80);
+        }
+
+        return {
+          els,
+          category,
+          color,
+          t_dp,
+          heat: Math.round(heat),
+          humidity: Math.round(humidity),
+          wind: Math.round(wind),
+          solar,
+          m_pace
+        };
+      }
+
+      // Decision Engine — training-type-specific recommendations
+      const TRAINING_TYPES = [
+        { id: 'easy',      name: 'Easy Run',           sensitivity: 0.6, maxELS: 85, icon: 'heart' },
+        { id: 'long',      name: 'Long Run',           sensitivity: 0.8, maxELS: 75, icon: 'route' },
+        { id: 'marathon',  name: 'Marathon Pace',      sensitivity: 0.9, maxELS: 65, icon: 'timer' },
+        { id: 'threshold', name: 'Threshold Workout',  sensitivity: 1.0, maxELS: 55, icon: 'zap' },
+        { id: 'intervals', name: 'Interval Training',  sensitivity: 1.2, maxELS: 45, icon: 'flame' }
+      ];
+
+      const RECOMMENDATIONS = {
+        recommended: { label: 'Recommended', color: 'emerald', bgClass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' },
+        acceptable:  { label: 'Acceptable',  color: 'cyan',    bgClass: 'bg-brand-accent/10 border-brand-accent/30 text-brand-accent' },
+        modify:      { label: 'Modify',      color: 'amber',   bgClass: 'bg-amber-500/10 border-amber-500/30 text-amber-400' },
+        avoid:       { label: 'Avoid Today',  color: 'rose',    bgClass: 'bg-rose-500/10 border-rose-500/30 text-rose-400' }
+      };
+
+      // ── Duplicated in src/engine.js for testing (engine.js takes heatTolerance as 3rd param) ──
+      function getRecommendation(els, trainingType) {
+        const config = TRAINING_TYPES.find(t => t.id === trainingType);
+        if (!config) return 'acceptable';
+        // Adjust threshold based on heat tolerance
+        const tolShift = state.heatTolerance === 'low' ? -8 : state.heatTolerance === 'high' ? 8 : 0;
+        const adjustedMax = config.maxELS + tolShift;
+        if (els <= adjustedMax * 0.55) return 'recommended';
+        if (els <= adjustedMax * 0.75) return 'acceptable';
+        if (els <= adjustedMax) return 'modify';
+        return 'avoid';
+      }
+
+      // ── Duplicated in src/engine.js for testing ──
+      function getConfidence(els, trainingType) {
+        const config = TRAINING_TYPES.find(t => t.id === trainingType);
+        if (!config) return 70;
+        const max = config.maxELS;
+        const ratio = els / max;
+        const boundaries = [0, 0.55, 0.75, 1.0];
+        let minDist = 1;
+        for (const b of boundaries) {
+          minDist = Math.min(minDist, Math.abs(ratio - b));
+        }
+        return Math.min(95, Math.round(55 + minDist * 80));
+      }
+
+      function generateActions(els, m_pace, trainingType, recommendation) {
+        const actions = [];
+        const conversion = state.unit === 'metric' ? 1.0 : 1.609344;
+        const unit = state.unit === 'metric' ? 'sec/km' : 'sec/mi';
+
+        if (recommendation === 'modify') {
+          const shift = Math.round((m_pace - 1) * 300 * conversion);
+          actions.push({ text: `Slow your ${trainingType} pace by +${shift} ${unit}`, type: 'pace' });
+        }
+        if (recommendation === 'avoid') {
+          actions.push({ text: `Swap ${trainingType} to an Easy Run today. Resume tomorrow if conditions improve.`, type: 'swap' });
+        }
+        if (els > 30) {
+          actions.push({ text: 'Increase fluid intake by 500ml during run', type: 'hydration' });
+        }
+        if (els > 50) {
+          actions.push({ text: 'Run early morning or late evening when temperatures drop', type: 'timing' });
+        }
+        if (els > 65) {
+          actions.push({ text: 'Cap workout at 45 minutes maximum', type: 'duration' });
+        }
+        return actions;
       }
 
       // Runner Levels classifications based on VDOT score
@@ -959,7 +1239,7 @@
 
       // Animated number count-up helper
       function animateCountUp(element, targetValue, duration, decimals) {
-        if (!element) return;
+        if (!element || !Number.isFinite(targetValue)) return;
         const startValue = parseFloat(element.textContent) || 0;
         const startTime = performance.now();
 
@@ -1212,13 +1492,15 @@
         }
         document.getElementById('vdot-description').textContent = `${level.desc} Your calculated VDOT score of ${vdotDisplayVal} is optimized based on Jack Daniels' running formulas and represents your steady-state running potential.`;
 
-        // Calculate Environmental Indicators
-        const weather = calculateThermalPenalty(tempC, rh);
+        // Calculate Environmental Load Score
+        const weather = calculateEnvironmentalLoad(tempC, rh, state.windSpeedKmh, state.cloudCover);
         const t_dp = weather.t_dp;
-        const wiv = weather.wiv;
         const m_pace = weather.m_pace;
+        const els = weather.els;
+        const elsCategory = weather.category;
+        const elsColor = weather.color;
 
-        // Display Ambient Calculations
+        // Display Dew Point with animation
         const dewEl = document.getElementById('dew-point-val');
         const dewTarget = t_dp;
         const dewDuration = 200;
@@ -1232,13 +1514,15 @@
           if (progress < 1) requestAnimationFrame(updateDew);
         }
         requestAnimationFrame(updateDew);
+
+        // Multiplier badge
         document.getElementById('current-multiplier-badge').textContent = `x${m_pace.toFixed(3)} Penalty`;
         const badgeEl = document.getElementById('current-multiplier-badge');
         badgeEl.classList.remove('pulse-glow');
         void badgeEl.offsetWidth;
         badgeEl.classList.add('pulse-glow');
         
-        // Dew Point Category Label (High Contrast Brighter in Dark Mode)
+        // Dew Point Category Label
         const dewLabelEl = document.getElementById('dew-point-label');
         if (t_dp < 10) {
           dewLabelEl.textContent = "Very comfortable / Dry";
@@ -1257,25 +1541,27 @@
           dewLabelEl.className = "block text-[10px] font-bold text-rose-400";
         }
 
-        // WIV Category and Label
-        const wivLabelEl = document.getElementById('wiv-label');
+        // Environmental Load Score display
+        const elsLabelEl = document.getElementById('wiv-label');
         const metricTitleIndicator = document.getElementById('metric-title-indicator');
         
-        if (metricTitleIndicator) metricTitleIndicator.textContent = "Weather Impact Index";
-        animateCountUp(document.getElementById('wiv-val'), wiv, 200, 1);
-        
-        if (wiv <= 25) {
-          wivLabelEl.textContent = "Ideal Racing Conditions";
-          wivLabelEl.className = "block text-[10px] font-bold text-emerald-400";
-        } else if (wiv <= 40) {
-          wivLabelEl.textContent = "Moderate Impact (Noticeable)";
-          wivLabelEl.className = "block text-[10px] font-bold text-amber-400";
-        } else if (wiv <= 55) {
-          wivLabelEl.textContent = "High Stress (Pace Affected)";
-          wivLabelEl.className = "block text-[10px] font-bold text-orange-400";
-        } else {
-          wivLabelEl.textContent = "Extreme Stress / Pace Degraded";
-          wivLabelEl.className = "block text-[10px] font-bold text-rose-400";
+        if (metricTitleIndicator) metricTitleIndicator.textContent = "Environmental Load";
+        animateCountUp(document.getElementById('wiv-val'), els, 200, 0);
+
+        const colorMap = { emerald: 'text-emerald-400', cyan: 'text-brand-accent', amber: 'text-amber-400', orange: 'text-orange-400', rose: 'text-rose-400' };
+        elsLabelEl.textContent = elsCategory;
+        elsLabelEl.className = `block text-[10px] font-bold ${colorMap[elsColor] || 'text-slate-400'}`;
+
+        // Update ELS breakdown display
+        const breakdownEl = document.getElementById('els-breakdown');
+        if (breakdownEl) {
+          const windSign = weather.wind > 0 ? '-' : '';
+          breakdownEl.innerHTML = `
+            <span class="text-orange-400">Heat +${weather.heat}</span>
+            <span class="text-amber-400">Humidity +${weather.humidity}</span>
+            <span class="text-cyan-400">Wind ${windSign}${weather.wind}</span>
+            <span class="text-yellow-400">Solar +${weather.solar}</span>
+          `;
         }
 
         // Calculate Equivalent race performance times and weather-degraded alternatives
@@ -1414,7 +1700,7 @@
 
           // Build Desktop Row
           zonesHtml += `
-            <tr class="hover:bg-slate-800/40 border-b border-slate-850 transition duration-100 animate-update" style="animation-delay: ${index * 40}ms">
+            <tr class="hover:bg-slate-800/40 border-b border-slate-700 transition duration-100 animate-update" style="animation-delay: ${index * 40}ms">
               <td class="px-5 py-3.5">
                 <span class="block font-black text-white text-[13px]">${zone.name}</span>
                 <span class="block text-[10px] text-slate-400 font-medium leading-relaxed mt-0.5 max-w-sm">${zone.purpose}</span>
@@ -1479,36 +1765,28 @@
         document.getElementById('zones-table-body').innerHTML = zonesHtml;
         document.getElementById('zones-cards-container').innerHTML = zonesCardsHtml;
 
-        // Actionable Coaching Advice System
-        const penaltyPercentage = ((m_pace - 1.0) * 100).toFixed(1);
-        document.getElementById('advisory-penalty-pct').textContent = `+${penaltyPercentage}%`;
+        // Actionable Coaching Advice System — ELS-based
+        document.getElementById('advisory-penalty-pct').textContent = els;
         
-        // Progress Bar color and width
+        // Progress Bar color and width (ELS 0-100)
         const progressBar = document.getElementById('advisory-progress-bar');
         const levelLabel = document.getElementById('advisory-level-label');
         
-        let advisoryProgress = Math.min(((wiv - 25) / 45) * 100, 100);
-        if (wiv <= 25) advisoryProgress = 0;
+        progressBar.style.width = `${els}%`;
         
-        progressBar.style.width = `${advisoryProgress}%`;
+        const barColors = {
+          emerald: 'bg-emerald-400',
+          cyan: 'bg-brand-accent',
+          amber: 'bg-amber-400',
+          orange: 'bg-orange-400',
+          rose: 'bg-rose-500'
+        };
+        const barColor = barColors[elsColor] || 'bg-brand-accent';
+        progressBar.className = `${barColor} h-full rounded-full transition-all duration-300${els > 80 ? ' animate-pulse' : ''}`;
         
-        if (wiv <= 25) {
-          progressBar.className = "bg-emerald-400 h-full rounded-full transition-all duration-300";
-          levelLabel.textContent = "Ideal (No Degradation)";
-          levelLabel.className = "block text-xs font-black text-emerald-400 mt-1 uppercase tracking-wide";
-        } else if (wiv <= 40) {
-          progressBar.className = "bg-amber-400 h-full rounded-full transition-all duration-300";
-          levelLabel.textContent = "Moderate Penalty";
-          levelLabel.className = "block text-xs font-black text-amber-400 mt-1 uppercase tracking-wide";
-        } else if (wiv <= 55) {
-          progressBar.className = "bg-orange-400 h-full rounded-full transition-all duration-300";
-          levelLabel.textContent = "High Thermal Strain";
-          levelLabel.className = "block text-xs font-black text-brand-amberAccent mt-1 uppercase tracking-wide";
-        } else {
-          progressBar.className = "bg-rose-500 h-full rounded-full transition-all duration-300 animate-pulse";
-          levelLabel.textContent = "Extreme Oppressive / Danger";
-          levelLabel.className = "block text-xs font-black text-rose-400 mt-1 uppercase tracking-wide";
-        }
+        const labelColorMap = { emerald: 'text-emerald-400', cyan: 'text-brand-accent', amber: 'text-amber-400', orange: 'text-orange-400', rose: 'text-rose-400' };
+        levelLabel.textContent = elsCategory;
+        levelLabel.className = `block text-xs font-black ${labelColorMap[elsColor] || 'text-brand-accent'} mt-1 uppercase tracking-wide`;
 
         // Coaching texts generator based on exact environment index
         const isMetric = state.unit === 'metric';
@@ -1532,17 +1810,17 @@
           ? "Drink according to thirsty feelings. Focus on 300-500ml hydration per hour if sweat is normal. Focus on sodium replacement after key efforts."
           : "Drink according to thirsty feelings. Focus on 10-16 oz (300-500ml) hydration per hour if sweat is normal. Focus on sodium replacement after key efforts.";
 
-        if (wiv > 25 && wiv <= 40) {
+        if (els > 20 && els <= 40) {
           pacingText = `The weather adds a modest metabolic toll. Slow your steady-state runs by roughly ${shiftMin} to ${shiftMax} seconds per ${shiftUnit}. Avoid chasing baseline threshold paces. Run by Relative Effort (RPE).`;
           hydrationText = isMetric
             ? `Increased sweat rates will trigger. Ensure electrolyte pre-hydration. Drink 500-750ml of water/electrolytes for each hour of running. Sweat evaporation rate is decent.`
             : `Increased sweat rates will trigger. Ensure electrolyte pre-hydration. Drink 16-24 oz (500-750ml) of water/electrolytes for each hour of running. Sweat evaporation rate is decent.`;
-        } else if (wiv > 40 && wiv <= 55) {
+        } else if (els > 40 && els <= 60) {
           pacingText = `HIGH STRAIN: Sweat is struggling to evaporate due to dew points near ${tempString}. Your heart rate will experience significant Cardiac Drift, rising continuously. De-escalate targets by ${shiftMin} to ${shiftMax} ${shiftUnitAbbr}. Split intervals into shorter segments with longer recoveries.`;
           hydrationText = isMetric
             ? `Sweat rates are heavy but cooling is inefficient. Electrolyte replacement is MANDATORY. Aim for 750-1000ml fluid/hr with 600-1000mg sodium. Monitor weight loss after runs.`
             : `Sweat rates are heavy but cooling is inefficient. Electrolyte replacement is MANDATORY. Aim for 24-34 oz (750-1000ml) fluid/hr with 600-1000mg sodium. Monitor weight loss after runs.`;
-        } else if (wiv > 55) {
+        } else if (els > 60) {
           pacingText = `CRITICAL DANGER: Atmospheric cooling capability is nearly locked. Running baseline paces risks rapid heatstroke. Cut long distance efforts completely or move indoors. If training, slow down pace by at least ${shiftMin} ${shiftUnitAbbr} and ignore paces altogether. Focus strictly on maintaining a low, safe Heart Rate.`;
           hydrationText = isMetric
             ? `Sweat will drip off without cooling you. Maximum sweating capacity limit reached. Drink ice-slurry drinks before training to cool core temp. Strict electrolyte intake is critical. Cap workouts at 45 minutes max.`
@@ -1551,6 +1829,128 @@
 
         document.getElementById('coaching-pacing').textContent = pacingText;
         document.getElementById('coaching-hydration').textContent = hydrationText;
+
+        // Populate Recommendations Grid
+        const recsGrid = document.getElementById('recommendations-grid');
+        if (recsGrid) {
+          let recsHtml = '';
+          TRAINING_TYPES.forEach(type => {
+            const rec = getRecommendation(els, type.id);
+            const conf = getConfidence(els, type.id);
+            const recConfig = RECOMMENDATIONS[rec];
+            recsHtml += `
+              <div class="flex flex-col items-center text-center p-3 rounded-xl border ${recConfig.bgClass} transition-all duration-200">
+                <i data-lucide="${type.icon}" class="w-5 h-5 mb-1.5 opacity-80"></i>
+                <span class="text-[11px] font-black uppercase tracking-wide">${type.name}</span>
+                <span class="text-[10px] font-bold mt-1">${recConfig.label}</span>
+                <span class="text-[9px] font-mono mt-0.5 opacity-70">${conf}%</span>
+              </div>
+            `;
+          });
+          recsGrid.innerHTML = recsHtml;
+          lucide.createIcons({ nodes: recsGrid.querySelectorAll('[data-lucide]') });
+        }
+
+        // Populate Action Cards
+        const primaryRec = getRecommendation(els, 'easy');
+        const actions = generateActions(els, m_pace, 'your workout', primaryRec);
+        const actionsContainer = document.getElementById('actions-container');
+        const actionsList = document.getElementById('actions-list');
+        if (actionsContainer && actionsList && actions.length > 0) {
+          actionsContainer.style.display = '';
+          const iconMap = { pace: 'gauge', swap: 'refresh-cw', hydration: 'droplets', timing: 'clock', duration: 'timer' };
+          const colorMap = { pace: 'text-amber-400', swap: 'text-rose-400', hydration: 'text-cyan-400', timing: 'text-emerald-400', duration: 'text-orange-400' };
+          actionsList.innerHTML = actions.map(a => `
+            <div class="flex items-center gap-2 text-xs text-slate-300 font-medium">
+              <i data-lucide="${iconMap[a.type] || 'info'}" class="w-3.5 h-3.5 ${colorMap[a.type] || 'text-slate-400'} shrink-0"></i>
+              <span>${a.text}</span>
+            </div>
+          `).join('');
+          lucide.createIcons({ nodes: actionsList.querySelectorAll('[data-lucide]') });
+        } else if (actionsContainer) {
+          actionsContainer.style.display = 'none';
+        }
+
+        // Populate Progressive Disclosure "Why?" section
+        const setIf = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setIf('why-heat', `+${weather.heat}`);
+        setIf('why-humidity', `+${weather.humidity}`);
+        setIf('why-wind', `-${weather.wind}`);
+        setIf('why-solar', `+${weather.solar}`);
+        setIf('why-els', els);
+        const isM = state.unit === 'metric';
+        setIf('why-temp', isM ? `${tempC}°C` : `${(tempC * 1.8 + 32).toFixed(0)}°F`);
+        setIf('why-rh', `${rh}%`);
+        setIf('why-dp', isM ? `${t_dp.toFixed(1)}°C` : `${(t_dp * 1.8 + 32).toFixed(1)}°F`);
+        setIf('why-wind-val', `${state.windSpeedKmh} km/h`);
+        setIf('why-cloud', `${state.cloudCover}%`);
+        setIf('why-mpace', `x${m_pace.toFixed(3)}`);
+
+        // Populate Forecast Timeline
+        const forecastSection = document.getElementById('forecast-section');
+        const forecastTimeline = document.getElementById('forecast-timeline');
+        const bestTimeText = document.getElementById('best-time-text');
+        if (state.forecast && forecastTimeline && forecastSection) {
+          forecastSection.style.display = '';
+          const hours = state.forecast.time || [];
+          const temps = state.forecast.temperature_2m || [];
+          const rhs = state.forecast.relative_humidity_2m || [];
+          const winds = state.forecast.wind_speed_10m || [];
+          const clouds = state.forecast.cloud_cover || [];
+
+          // Find current hour index
+          const now = new Date();
+          const currentHour = now.getHours();
+
+          let bestHour = 0;
+          let bestELS = 100;
+          let timelineHtml = '';
+
+          for (let i = 0; i < Math.min(hours.length, 24); i++) {
+            const h = new Date(hours[i]).getHours();
+            const hrTemp = Math.round(temps[i] || 0);
+            const hrRh = Math.max(10, Math.min(100, Math.round(rhs[i] || 50)));
+            const hrWind = Math.max(0, Math.round(winds[i] || 0));
+            const hrCloud = Math.max(0, Math.min(100, Math.round(clouds[i] != null ? clouds[i] : 50)));
+            const hrWeather = calculateEnvironmentalLoad(hrTemp, hrRh, hrWind, hrCloud);
+            const isPast = h < currentHour;
+            const isNow = h === currentHour;
+
+            if (!isPast && hrWeather.els < bestELS) {
+              bestELS = hrWeather.els;
+              bestHour = h;
+            }
+
+            const colorMap = { emerald: 'bg-emerald-500', cyan: 'bg-cyan-500', amber: 'bg-amber-500', orange: 'bg-orange-500', rose: 'bg-rose-500' };
+            const barColor = colorMap[hrWeather.color] || 'bg-slate-500';
+            const opacity = isPast ? 'opacity-30' : isNow ? 'ring-1 ring-brand-accent' : '';
+            const barHeight = Math.max(4, hrWeather.els);
+
+            timelineHtml += `
+              <div class="flex flex-col items-center gap-1 ${opacity}" title="${h}:00 — ELS ${hrWeather.els} (${hrWeather.category})">
+                <div class="w-full bg-slate-900 rounded-sm relative" style="height: 40px;">
+                  <div class="${barColor} rounded-sm absolute bottom-0 w-full transition-all" style="height: ${barHeight}%;"></div>
+                </div>
+                <span class="text-[8px] font-mono font-bold ${isNow ? 'text-brand-accent' : 'text-slate-500'}">${h}h</span>
+              </div>
+            `;
+          }
+          forecastTimeline.innerHTML = timelineHtml;
+
+          const bestFormatted = bestHour.toString().padStart(2, '0') + ':00';
+          if (bestELS <= 20) {
+            bestTimeText.textContent = `Best time to run: ${bestFormatted} (ELS ${bestELS} — Ideal)`;
+            bestTimeText.className = 'text-[11px] font-bold text-emerald-400';
+          } else if (bestELS <= 40) {
+            bestTimeText.textContent = `Best time to run: ${bestFormatted} (ELS ${bestELS} — Warm)`;
+            bestTimeText.className = 'text-[11px] font-bold text-cyan-400';
+          } else {
+            bestTimeText.textContent = `Best time to run: ${bestFormatted} (ELS ${bestELS} — ${calculateEnvironmentalLoad(0,0,0,0).category})`;
+            bestTimeText.className = 'text-[11px] font-bold text-amber-400';
+          }
+        } else if (forecastSection) {
+          forecastSection.style.display = 'none';
+        }
 
         // Populate Split Table
         const splitDist = state.splitDistance;
@@ -1702,6 +2102,44 @@
         document.getElementById('humidity-display').textContent = `${rh}%`;
       }
 
+      // Wind Speed Slider events
+      const windSlider = document.getElementById('wind-slider');
+      windSlider.addEventListener('input', (e) => {
+        const wind = parseInt(e.target.value);
+        state.windSpeedKmh = wind;
+        document.getElementById('wind-display').textContent = `${wind} km/h`;
+        recalculate();
+      });
+
+      // Cloud Cover Slider events
+      const cloudSlider = document.getElementById('cloud-slider');
+      cloudSlider.addEventListener('input', (e) => {
+        const cloud = parseInt(e.target.value);
+        state.cloudCover = cloud;
+        document.getElementById('cloud-display').textContent = `${cloud}%`;
+        recalculate();
+      });
+
+      // Heat Tolerance buttons
+      const tolGroup = document.getElementById('heat-tolerance-group');
+      if (tolGroup) {
+        tolGroup.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tol = btn.getAttribute('data-tol');
+            state.heatTolerance = tol;
+            tolGroup.querySelectorAll('button').forEach(b => {
+              if (b === btn) {
+                b.className = "btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-brand-accent/40 text-brand-accent bg-brand-accent/10 transition cursor-pointer";
+              } else {
+                b.className = "btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-white transition cursor-pointer";
+              }
+            });
+            saveState();
+            recalculate();
+          });
+        });
+      }
+
       // Smart Weather Sync Functionality (Real API integration with open-meteo)
       async function performWeatherSearch() {
         const input = document.getElementById('weather-location-input');
@@ -1730,7 +2168,7 @@
           status.textContent = "Fetching...";
           status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
 
-          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`);
+          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&forecast_days=1`);
           const weatherData = await weatherRes.json();
 
           if (!weatherData.current) {
@@ -1741,15 +2179,28 @@
 
           const temp = Math.round(weatherData.current.temperature_2m);
           const rh = Math.round(weatherData.current.relative_humidity_2m);
+          const wind = Math.round(weatherData.current.wind_speed_10m || 0);
+          const cloud = Math.round(weatherData.current.cloud_cover != null ? weatherData.current.cloud_cover : 50);
 
           state.temperatureC = Math.max(0, Math.min(50, temp));
           state.relativeHumidity = Math.max(10, Math.min(100, rh));
+          state.windSpeedKmh = Math.max(0, Math.min(60, wind));
+          state.cloudCover = Math.max(0, Math.min(100, cloud));
+
+          // Store hourly forecast for timeline
+          if (weatherData.hourly) {
+            state.forecast = weatherData.hourly;
+          }
 
           document.getElementById('temp-slider').value = state.temperatureC;
           document.getElementById('humidity-slider').value = state.relativeHumidity;
+          document.getElementById('wind-slider').value = state.windSpeedKmh;
+          document.getElementById('cloud-slider').value = state.cloudCover;
 
           updateTempSliderDisplay(state.temperatureC);
           updateHumiditySliderDisplay(state.relativeHumidity);
+          document.getElementById('wind-display').textContent = `${state.windSpeedKmh} km/h`;
+          document.getElementById('cloud-display').textContent = `${state.cloudCover}%`;
           updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
 
           status.textContent = `${cityName} synced!`;
@@ -1789,7 +2240,7 @@
           status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
 
           try {
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`);
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&forecast_days=1`);
             const weatherData = await weatherRes.json();
 
             if (!weatherData.current) {
@@ -1800,15 +2251,28 @@
 
             const temp = Math.round(weatherData.current.temperature_2m);
             const rh = Math.round(weatherData.current.relative_humidity_2m);
+            const wind = Math.round(weatherData.current.wind_speed_10m || 0);
+            const cloud = Math.round(weatherData.current.cloud_cover != null ? weatherData.current.cloud_cover : 50);
 
             state.temperatureC = Math.max(0, Math.min(50, temp));
             state.relativeHumidity = Math.max(10, Math.min(100, rh));
+            state.windSpeedKmh = Math.max(0, Math.min(60, wind));
+            state.cloudCover = Math.max(0, Math.min(100, cloud));
+
+            // Store hourly forecast for timeline
+            if (weatherData.hourly) {
+              state.forecast = weatherData.hourly;
+            }
 
             document.getElementById('temp-slider').value = state.temperatureC;
             document.getElementById('humidity-slider').value = state.relativeHumidity;
+            document.getElementById('wind-slider').value = state.windSpeedKmh;
+            document.getElementById('cloud-slider').value = state.cloudCover;
 
             updateTempSliderDisplay(state.temperatureC);
             updateHumiditySliderDisplay(state.relativeHumidity);
+            document.getElementById('wind-display').textContent = `${state.windSpeedKmh} km/h`;
+            document.getElementById('cloud-display').textContent = `${state.cloudCover}%`;
             updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
 
             status.textContent = "Local GPS synced!";
@@ -2001,6 +2465,55 @@
         });
       });
 
+      // Feedback Loop
+      const feedbackBtn = document.getElementById('feedback-btn');
+      const feedbackPanel = document.getElementById('feedback-panel');
+      if (feedbackBtn && feedbackPanel) {
+        feedbackBtn.addEventListener('click', () => {
+          feedbackPanel.classList.toggle('hidden');
+        });
+
+        feedbackPanel.querySelectorAll('#feedback-options button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const fb = btn.getAttribute('data-fb');
+            const entries = JSON.parse(localStorage.getItem('thermapace_feedback') || '[]');
+            entries.push({
+              els: document.getElementById('advisory-penalty-pct').textContent,
+              recommendation: document.getElementById('advisory-level-label').textContent,
+              feedback: fb,
+              ts: Date.now()
+            });
+            // Keep last 50 entries
+            if (entries.length > 50) entries.splice(0, entries.length - 50);
+            localStorage.setItem('thermapace_feedback', JSON.stringify(entries));
+
+            const status = document.getElementById('feedback-status');
+            if (fb === 'accurate') {
+              status.textContent = 'Thanks! Glad it was helpful.';
+              status.className = 'text-[9px] text-emerald-400 mt-1.5 font-mono';
+            } else {
+              status.textContent = 'Noted — we\'ll use this to improve.';
+              status.className = 'text-[9px] text-amber-400 mt-1.5 font-mono';
+            }
+
+            // Show pattern after 10+ entries
+            if (entries.length >= 10) {
+              const conserv = entries.filter(e => e.feedback === 'conservative').length;
+              const aggr = entries.filter(e => e.feedback === 'aggressive').length;
+              if (conserv > entries.length * 0.6) {
+                status.textContent += ' Pattern: recommendations tend too conservative. Consider setting Heat Tolerance to High.';
+              } else if (aggr > entries.length * 0.6) {
+                status.textContent += ' Pattern: recommendations tend too aggressive. Consider setting Heat Tolerance to Low.';
+              }
+            }
+
+            setTimeout(() => {
+              feedbackPanel.classList.add('hidden');
+            }, 3000);
+          });
+        });
+      }
+
       // Window resize debounced listener to redraw D3 chart responsively
       let d3ResizeTimeout;
       window.addEventListener('resize', () => {
@@ -2022,11 +2535,27 @@
         document.getElementById('time-seconds').value = state.seconds;
         document.getElementById('temp-slider').value = state.temperatureC;
         document.getElementById('humidity-slider').value = state.relativeHumidity;
+        document.getElementById('wind-slider').value = state.windSpeedKmh;
+        document.getElementById('cloud-slider').value = state.cloudCover;
         
         // Update helper displays
         updateDistanceHelper(state.distanceMeters);
         updateTempSliderDisplay(state.temperatureC);
         updateHumiditySliderDisplay(state.relativeHumidity);
+        document.getElementById('wind-display').textContent = `${state.windSpeedKmh} km/h`;
+        document.getElementById('cloud-display').textContent = `${state.cloudCover}%`;
+
+        // Set heat tolerance buttons
+        const tolGroupInit = document.getElementById('heat-tolerance-group');
+        if (tolGroupInit) {
+          tolGroupInit.querySelectorAll('button').forEach(b => {
+            if (b.getAttribute('data-tol') === state.heatTolerance) {
+              b.className = "btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-brand-accent/40 text-brand-accent bg-brand-accent/10 transition cursor-pointer";
+            } else {
+              b.className = "btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-white transition cursor-pointer";
+            }
+          });
+        }
       }
 
       // Sync active button highlights initially
@@ -2063,54 +2592,13 @@
     });
   </script>
 
-  <!-- PWA Service Worker Registration Block -->
-  <script id="service-worker-script">
-    const swCode = `
-      const CACHE_NAME = 'vdot-thermal-cache-v1';
-      const ASSETS = [
-        '/',
-        '/index.html',
-        'https://cdn.tailwindcss.com',
-        'https://unpkg.com/lucide@latest',
-        'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap'
-      ];
-
-      self.addEventListener('install', (event) => {
-        self.skipWaiting();
-        event.waitUntil(
-          caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS);
-          })
-        );
-      });
-
-      self.addEventListener('activate', (event) => {
-        event.waitUntil(self.clients.claim());
-      });
-
-      self.addEventListener('fetch', (event) => {
-        event.respondWith(
-          caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            return fetch(event.request);
-          })
-        );
-      });
-    `;
-
+  <!-- PWA Service Worker Registration -->
+  <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        try {
-          const blob = new Blob([swCode], { type: 'application/javascript' });
-          const swUrl = URL.createObjectURL(blob);
-          navigator.serviceWorker.register(swUrl)
-            .then(reg => console.log('PWA Service Worker registered successfully!', reg))
-            .catch(err => console.warn('Service Worker registration skipped (expected in sandboxed frames):', err));
-        } catch (e) {
-          console.warn('Could not initialize service worker:', e);
-        }
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.warn('SW registration skipped:', err));
       });
     }
   </script>

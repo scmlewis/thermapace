@@ -1,0 +1,20 @@
+{
+  "name": "ThermaPace VDOT",
+  "short_name": "ThermaPace",
+  "description": "Running Environmental Decision Engine — dynamic VDOT pace calculator with real-time weather degradation modeling.",
+  "start_url": "/thermapace/",
+  "scope": "/thermapace/",
+  "display": "standalone",
+  "background_color": "#0A0E1A",
+  "theme_color": "#06B6D4",
+  "orientation": "portrait-primary",
+  "categories": ["fitness", "health", "weather"],
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
