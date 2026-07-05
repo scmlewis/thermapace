@@ -233,9 +233,9 @@
           </p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1 sm:gap-2">
         <a href="https://github.com/scmlewis" target="_blank" rel="noopener noreferrer"
-           class="text-xs font-bold text-slate-400 hover:text-white transition"
+           class="text-xs font-bold text-slate-400 hover:text-white transition hidden sm:inline"
            title="Author: scmlewis">
           scmlewis
         </a>
@@ -244,6 +244,11 @@
            title="Source Code">
           <i data-lucide="github" class="w-5 h-5"></i>
         </a>
+        <button type="button" id="about-btn"
+           class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+           title="About ThermaPace">
+          <i data-lucide="info" class="w-5 h-5"></i>
+        </button>
       </div>
     </div>
   </header>
@@ -932,11 +937,130 @@
 
 
 
+  <!-- About Modal -->
+  <div id="about-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+    <!-- Backdrop -->
+    <div id="about-modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+    <!-- Modal Panel -->
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="glass-panel rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto border border-slate-700/50 relative">
+        <!-- Close Button -->
+        <button type="button" id="about-modal-close"
+           class="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer z-10"
+           aria-label="Close about dialog">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div class="p-6 sm:p-8 flex flex-col gap-6">
+          <!-- Header -->
+          <div class="text-center">
+            <div class="w-14 h-14 bg-brand-accent rounded-xl flex items-center justify-center font-black italic text-2xl shadow-lg shadow-brand-accent/20 text-brand-dark mx-auto mb-3">
+              TP
+            </div>
+            <h2 id="about-modal-title" class="text-xl font-black text-white tracking-tight uppercase">ThermaPace VDOT</h2>
+            <p class="text-xs text-slate-400 font-medium mt-1">Thermal Athletic Performance Engine</p>
+          </div>
+
+          <!-- Purpose -->
+          <div>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+              <i data-lucide="target" class="w-3.5 h-3.5 text-brand-accent"></i>
+              Purpose
+            </h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              ThermaPace is a VDOT-based pace calculator that adjusts training paces for real-world weather conditions. It uses a WBGT-inspired Environmental Load Score to model how temperature, humidity, wind, and solar radiation affect your performance, then provides actionable coaching recommendations for each workout type.
+            </p>
+          </div>
+
+          <!-- How to Use -->
+          <div>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+              <i data-lucide="list-checks" class="w-3.5 h-3.5 text-brand-accent"></i>
+              How to Use
+            </h3>
+            <ol class="text-sm text-slate-300 space-y-2 list-decimal list-inside">
+              <li><span class="font-bold text-white">Enter race performance</span> — input any race distance and time to calculate your VDOT score</li>
+              <li><span class="font-bold text-white">Set weather conditions</span> — use the sliders, weather presets, or smart GPS sync to model today's environment</li>
+              <li><span class="font-bold text-white">Review recommendations</span> — check the Pacing and Advisory tabs for adjusted paces and training guidance</li>
+            </ol>
+          </div>
+
+          <!-- Author & Source -->
+          <div class="grid grid-cols-2 gap-3">
+            <a href="https://github.com/scmlewis" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/50 border border-slate-800/80 hover:border-slate-700/50 transition group">
+              <i data-lucide="github" class="w-5 h-5 text-slate-400 group-hover:text-white transition"></i>
+              <div>
+                <span class="block text-xs font-bold text-white">Author</span>
+                <span class="block text-[10px] text-slate-400 font-mono">scmlewis</span>
+              </div>
+            </a>
+            <a href="https://github.com/scmlewis/thermapace" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/50 border border-slate-800/80 hover:border-slate-700/50 transition group">
+              <i data-lucide="github" class="w-5 h-5 text-brand-accent group-hover:text-brand-accentHover transition"></i>
+              <div>
+                <span class="block text-xs font-bold text-white">Source Code</span>
+                <span class="block text-[10px] text-slate-400 font-mono">View on GitHub</span>
+              </div>
+            </a>
+          </div>
+
+          <!-- Tech Stack -->
+          <div>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-accent"></i>
+              Tech Stack
+            </h3>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="px-2 py-1 text-[10px] font-bold rounded-md bg-brand-accent/10 text-brand-accent border border-brand-accent/20 font-mono">Tailwind CSS</span>
+              <span class="px-2 py-1 text-[10px] font-bold rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">D3.js</span>
+              <span class="px-2 py-1 text-[10px] font-bold rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Vite</span>
+              <span class="px-2 py-1 text-[10px] font-bold rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono">Lucide Icons</span>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="pt-3 border-t border-slate-800/50 text-center">
+            <p class="text-[10px] text-slate-500 font-bold font-mono uppercase tracking-wider">Apache 2.0 License</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- DYNAMIC CORE MODULES (Vanilla JS Architecture) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Initialize Lucide Icons
       lucide.createIcons();
+
+      // About Modal
+      const aboutBtn = document.getElementById('about-btn');
+      const aboutModal = document.getElementById('about-modal');
+      const aboutModalClose = document.getElementById('about-modal-close');
+      const aboutModalBackdrop = document.getElementById('about-modal-backdrop');
+
+      function openAboutModal() {
+        aboutModal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        lucide.createIcons({ nodes: aboutModal.querySelectorAll('[data-lucide]') });
+        aboutModalClose.focus();
+      }
+
+      function closeAboutModal() {
+        aboutModal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        aboutBtn.focus();
+      }
+
+      aboutBtn.addEventListener('click', openAboutModal);
+      aboutModalClose.addEventListener('click', closeAboutModal);
+      aboutModalBackdrop.addEventListener('click', closeAboutModal);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !aboutModal.classList.contains('hidden')) {
+          closeAboutModal();
+        }
+      });
 
       // Global State Object
       const state = {
