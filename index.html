@@ -63,16 +63,16 @@
     }
     input[type="range"]::-webkit-slider-runnable-track {
       background: #1E293B;
-      height: 6px;
-      border-radius: 3px;
+      height: 8px;
+      border-radius: 4px;
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      margin-top: -5px;
+      margin-top: -7px;
       background-color: #06B6D4;
-      height: 16px;
-      width: 16px;
+      height: 20px;
+      width: 20px;
       border-radius: 50%;
       box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
       transition: all 0.15s ease;
@@ -199,6 +199,25 @@
     input[type="range"]:active::-moz-range-thumb {
       box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.5);
     }
+    input[type="range"]::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      border: none;
+      background-color: #06B6D4;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+      transition: all 0.15s ease;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      background-color: #22D3EE;
+      transform: scale(1.1);
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.6);
+    }
+    input[type="range"]::-moz-range-track {
+      background: #1E293B;
+      height: 8px;
+      border-radius: 4px;
+    }
 
     /* Progressive Disclosure details */
     details summary::-webkit-details-marker { display: none; }
@@ -228,7 +247,7 @@
           <h1 class="text-sm sm:text-base font-black text-white tracking-tight uppercase">
             ThermaPace VDOT
           </h1>
-          <p class="text-[9px] sm:text-[11px] text-slate-400 font-medium">
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block">
             Thermal Pacing &amp; Physiological Performance Engine
           </p>
         </div>
@@ -254,7 +273,7 @@
   </header>
 
   <!-- Main Content Dashboard -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-5 lg:p-6 pb-28 sm:pb-28 lg:pb-12 flex flex-col gap-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-5 lg:p-6 pb-28 sm:pb-28 lg:pb-6 flex flex-col gap-6">
 
     <!-- TAB 1 CONTENT: Config & Environment -->
     <div id="tab-content-config" role="tabpanel" aria-labelledby="tab-config" class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
@@ -276,7 +295,7 @@
             <!-- Distance Presets -->
             <div>
               <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Distance Presets</label>
-              <div class="grid grid-cols-5 gap-1.5" id="distance-presets">
+              <div class="grid grid-cols-3 sm:grid-cols-5 gap-1.5" id="distance-presets">
                 <button type="button" data-meters="1609.34" class="btn-press px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight hover:bg-slate-800 text-slate-200 transition border border-slate-700/40 cursor-pointer hover:border-slate-600/60">1M</button>
                 <button type="button" data-meters="5000" class="btn-press px-1.5 py-2.5 text-center text-xs font-black rounded-lg bg-brand-accent text-brand-dark transition border-none shadow-md shadow-brand-accent/10 cursor-pointer">5K</button>
                 <button type="button" data-meters="10000" class="btn-press px-1.5 py-2.5 text-center text-xs font-bold rounded-lg bg-brand-panelLight hover:bg-slate-800 text-slate-200 transition border border-slate-700/40 cursor-pointer hover:border-slate-600/60">10K</button>
@@ -331,7 +350,7 @@
             <div class="relative flex items-center justify-center w-24 h-24 bg-gradient-to-tr from-brand-accent to-blue-600 rounded-full shadow-lg shrink-0 shadow-brand-accent/20" id="vdot-circle">
               <div class="absolute inset-1.5 bg-brand-panel rounded-full flex flex-col items-center justify-center text-center">
                 <span class="text-3xl font-black text-brand-accent font-mono tracking-tighter" id="vdot-score">--</span>
-                <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase -mt-1">VDOT</span>
+                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase -mt-1">VDOT</span>
               </div>
             </div>
             <div class="text-center sm:text-left flex-1">
@@ -395,7 +414,7 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3.5 flex flex-col gap-2.5 shadow-inner">
               <div class="flex items-center justify-between">
                 <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Smart Weather Sync</span>
-                <span id="weather-status" class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wide">Ready</span>
+                <span id="weather-status" class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wide">Ready</span>
               </div>
               <div class="flex gap-2">
                 <!-- Location Input -->
@@ -412,7 +431,7 @@
                 <!-- GPS Sync Button -->
                 <button type="button" id="weather-gps-btn" class="btn-press px-3 py-2 bg-brand-accent/10 hover:bg-brand-accent/20 border border-brand-accent/20 text-brand-accent rounded-lg transition text-xs font-black cursor-pointer flex items-center gap-1.5" title="Get Current Location Weather" aria-label="Get weather from GPS location">
                   <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                  <span class="hidden xs:inline">GPS</span>
+                  <span class="hidden sm:inline">GPS</span>
                 </button>
               </div>
             </div>
@@ -514,7 +533,7 @@
             <div class="flex items-center justify-between">
               <div>
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Heat Tolerance</span>
-                <span class="block text-[9px] text-slate-500 font-medium mt-0.5">Adjusts recommendation thresholds</span>
+                <span class="block text-[10px] text-slate-500 font-medium mt-0.5">Adjusts recommendation thresholds</span>
               </div>
               <div class="flex gap-1" id="heat-tolerance-group">
                 <button data-tol="low" class="btn-press px-2.5 py-1 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-white transition cursor-pointer">Low</button>
@@ -547,7 +566,7 @@
           </p>
 
           <!-- Chart Container -->
-          <div class="relative w-full overflow-hidden bg-slate-900/50 rounded-xl border border-slate-800/80 p-4">
+          <div class="relative w-full overflow-hidden bg-slate-900/50 rounded-xl border border-slate-800/80 p-3 sm:p-4">
             <!-- Placeholder state when no calculation is done yet or multiplier is 1.0 -->
             <div id="chart-placeholder" class="py-12 text-center text-slate-500 font-bold italic text-sm">
               Provide performance inputs and increase temperature/humidity to generate thermal impact visualization.
@@ -655,7 +674,7 @@
               <div id="advisory-progress-bar" class="bg-gradient-to-r from-emerald-500 to-brand-accent h-full rounded-full transition-all duration-350" style="width: 0%"></div>
             </div>
             
-            <div class="flex justify-between text-[9px] font-bold text-slate-500 mt-2 font-mono">
+            <div class="flex justify-between text-[10px] font-bold text-slate-500 mt-2 font-mono">
               <span>0 Ideal</span>
               <span>40 Warm</span>
               <span>60 Demand</span>
@@ -663,7 +682,7 @@
             </div>
 
             <!-- ELS Factor Breakdown -->
-            <div id="els-breakdown" class="mt-3 pt-3 border-t border-slate-800/50 grid grid-cols-2 gap-1.5 text-[9px] font-mono font-bold">
+            <div id="els-breakdown" class="mt-3 pt-3 border-t border-slate-800/50 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px] font-mono font-bold">
               <span class="text-orange-400">Heat +0</span>
               <span class="text-amber-400">Humidity +0</span>
               <span class="text-cyan-400">Wind -0</span>
@@ -726,7 +745,7 @@
                 <button data-fb="accurate" class="btn-press px-3 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition cursor-pointer">Just right</button>
                 <button data-fb="aggressive" class="btn-press px-3 py-1.5 text-[10px] font-bold rounded border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition cursor-pointer">Too aggressive</button>
               </div>
-              <p class="text-[9px] text-slate-500 mt-1.5 font-mono" id="feedback-status"></p>
+              <p class="text-[10px] text-slate-500 mt-1.5 font-mono" id="feedback-status"></p>
             </div>
           </div>
         </div>
@@ -794,7 +813,7 @@
             <i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
             <span class="text-[11px] font-bold text-white" id="best-time-text">Best time to run: --</span>
           </div>
-          <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-1.5" id="forecast-timeline">
+          <div class="grid grid-cols-4 sm:grid-cols-8 md:grid-cols-12 gap-1.5" id="forecast-timeline">
             <!-- Populated by JS -->
           </div>
         </div>
@@ -824,12 +843,12 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="split-calculator-container">
+          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4" id="split-calculator-container">
             <!-- Easy Zone splits -->
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Easy Zone</span>
-                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">E-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">E-PACE</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
@@ -851,7 +870,7 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Marathon Zone</span>
-                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">M-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">M-PACE</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
@@ -873,7 +892,7 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Threshold Zone</span>
-                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">T-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">T-PACE</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
@@ -895,7 +914,7 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Interval Zone</span>
-                <span class="text-[9px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">I-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">I-PACE</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
@@ -1907,7 +1926,7 @@
               <div class="flex items-start justify-between">
                 <div>
                   <h4 class="text-xs font-black text-white tracking-wide">${zone.name}</h4>
-                  <p class="text-[9px] text-slate-500 font-bold font-mono mt-0.5 uppercase">${Math.round(zone.pMin*100)}% - ${Math.round(zone.pMax*100)}% VO2Max</p>
+                  <p class="text-[10px] text-slate-500 font-bold font-mono mt-0.5 uppercase">${Math.round(zone.pMin*100)}% - ${Math.round(zone.pMax*100)}% VO2Max</p>
                 </div>
                 <span class="${shiftBadgeClass}">
                   ${shiftStr}
@@ -1917,17 +1936,17 @@
               <!-- Card Values Grid -->
               <div class="grid grid-cols-2 gap-3 py-1 bg-slate-950/40 rounded-lg px-3 border border-slate-900/60">
                 <div>
-                  <span class="block text-[9px] text-slate-500 font-bold uppercase font-mono">Baseline</span>
+                  <span class="block text-[10px] text-slate-500 font-bold uppercase font-mono">Baseline</span>
                   <div class="flex items-baseline gap-1 mt-0.5">
                     <span class="text-sm font-extrabold font-mono text-slate-100">${baselineStr}</span>
-                    <span class="text-[9px] text-slate-500 font-bold font-mono">${subUnitLabel}</span>
+                    <span class="text-[10px] text-slate-500 font-bold font-mono">${subUnitLabel}</span>
                   </div>
                 </div>
                 <div>
-                  <span class="block text-[9px] text-brand-amberAccent/75 font-bold uppercase font-mono">Adjusted</span>
+                  <span class="block text-[10px] text-brand-amberAccent/75 font-bold uppercase font-mono">Adjusted</span>
                   <div class="flex items-baseline gap-1 mt-0.5">
                     <span class="text-sm font-extrabold font-mono text-brand-amberAccent">${adjStr}</span>
-                    <span class="text-[9px] text-brand-amberAccent/60 font-bold font-mono">${subUnitLabel}</span>
+                    <span class="text-[10px] text-brand-amberAccent/60 font-bold font-mono">${subUnitLabel}</span>
                   </div>
                 </div>
               </div>
@@ -2019,7 +2038,7 @@
                 <i data-lucide="${type.icon}" class="w-5 h-5 mb-1.5 opacity-80"></i>
                 <span class="text-[11px] font-black uppercase tracking-wide">${type.name}</span>
                 <span class="text-[10px] font-bold mt-1">${recConfig.label}</span>
-                <span class="text-[9px] font-mono mt-0.5 opacity-70">${conf}%</span>
+                <span class="text-[10px] font-mono mt-0.5 opacity-70">${conf}%</span>
               </div>
             `;
           });
@@ -2324,7 +2343,7 @@
         if (!query) return;
 
         status.textContent = "Searching...";
-        status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+        status.className = "text-[10px] font-mono font-bold text-amber-500 uppercase tracking-wide";
 
         try {
           const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1`);
@@ -2332,7 +2351,7 @@
 
           if (!geoData.results || geoData.results.length === 0) {
             status.textContent = "City not found";
-            status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+            status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
             return;
           }
 
@@ -2342,14 +2361,14 @@
           const cityName = city.name + (city.admin1 ? `, ${city.admin1}` : '') + (city.country_code ? ` [${city.country_code.toUpperCase()}]` : '');
 
           status.textContent = "Fetching...";
-          status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+          status.className = "text-[10px] font-mono font-bold text-amber-500 uppercase tracking-wide";
 
           const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&forecast_days=1`);
           const weatherData = await weatherRes.json();
 
           if (!weatherData.current) {
             status.textContent = "Weather unavailable";
-            status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+            status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
             return;
           }
 
@@ -2380,13 +2399,13 @@
           updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
 
           status.textContent = `${cityName} synced!`;
-          status.className = "text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wide";
+          status.className = "text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wide";
 
           recalculate();
         } catch (error) {
           console.error(error);
           status.textContent = "Sync error";
-          status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+          status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
         }
       }
 
@@ -2401,19 +2420,19 @@
         const status = document.getElementById('weather-status');
         if (!navigator.geolocation) {
           status.textContent = "No GPS support";
-          status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+          status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
           return;
         }
 
         status.textContent = "GPS locating...";
-        status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+        status.className = "text-[10px] font-mono font-bold text-amber-500 uppercase tracking-wide";
 
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
           status.textContent = "Syncing GPS...";
-          status.className = "text-[9px] font-mono font-bold text-amber-500 uppercase tracking-wide";
+          status.className = "text-[10px] font-mono font-bold text-amber-500 uppercase tracking-wide";
 
           try {
             const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,cloud_cover&forecast_days=1`);
@@ -2421,7 +2440,7 @@
 
             if (!weatherData.current) {
               status.textContent = "No data";
-              status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+              status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
               return;
             }
 
@@ -2452,13 +2471,13 @@
             updateWeatherPresetsUI(state.temperatureC, state.relativeHumidity);
 
             status.textContent = "Local GPS synced!";
-            status.className = "text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wide";
+            status.className = "text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wide";
 
             recalculate();
           } catch (e) {
             console.error(e);
             status.textContent = "Sync error";
-            status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+            status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
           }
         }, (error) => {
           let errorText = "GPS unavailable";
@@ -2472,7 +2491,7 @@
             errorText = error.message.includes("available") ? "GPS unavailable" : error.message;
           }
           status.textContent = errorText;
-          status.className = "text-[9px] font-mono font-bold text-rose-500 uppercase tracking-wide";
+          status.className = "text-[10px] font-mono font-bold text-rose-500 uppercase tracking-wide";
         }, {
           enableHighAccuracy: false,
           timeout: 8000,
@@ -2666,10 +2685,10 @@
             const status = document.getElementById('feedback-status');
             if (fb === 'accurate') {
               status.textContent = 'Thanks! Glad it was helpful.';
-              status.className = 'text-[9px] text-emerald-400 mt-1.5 font-mono';
+              status.className = 'text-[10px] text-emerald-400 mt-1.5 font-mono';
             } else {
               status.textContent = 'Noted — we\'ll use this to improve.';
-              status.className = 'text-[9px] text-amber-400 mt-1.5 font-mono';
+              status.className = 'text-[10px] text-amber-400 mt-1.5 font-mono';
             }
 
             // Show pattern after 10+ entries
