@@ -887,14 +887,19 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
-              <label for="split-distance-select" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Interval:</label>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Target:</span>
+                <span class="text-sm font-black text-brand-accent font-mono" id="split-dist-display">1000m</span>
+              </div>
+              <div class="w-px h-4 bg-slate-700"></div>
+              <label for="split-distance-select" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Interval:</label>
               <select id="split-distance-select" class="px-3 py-2 text-xs font-bold rounded-lg border border-slate-700 bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-accent text-white font-mono cursor-pointer">
-                <option value="400">400m Lap</option>
-                <option value="800">800m Interval</option>
-                <option value="1000" selected>1km Split</option>
-                <option value="1609.34">1 Mile Split</option>
-                <option value="5000">5km Split</option>
+                <option value="400">400m</option>
+                <option value="800">800m</option>
+                <option value="1000" selected>1km</option>
+                <option value="1609.34">1 Mile</option>
+                <option value="5000">5km</option>
               </select>
             </div>
           </div>
@@ -904,19 +909,15 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Easy Zone</span>
-                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">E-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded font-mono">E</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Target Dist:</span>
-                  <span class="font-bold text-slate-300" id="split-dist-e">1000m</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="text-slate-500">Baseline:</span>
                   <span class="font-bold text-slate-400" id="split-base-e">--:--</span>
                 </div>
                 <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
-                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-bold text-brand-amberAccent">Adjusted:</span>
                   <span class="font-black" id="split-adj-e">--:--</span>
                 </div>
               </div>
@@ -926,19 +927,15 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Marathon Zone</span>
-                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">M-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded font-mono">M</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Target Dist:</span>
-                  <span class="font-bold text-slate-300" id="split-dist-m">1000m</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="text-slate-500">Baseline:</span>
                   <span class="font-bold text-slate-400" id="split-base-m">--:--</span>
                 </div>
                 <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
-                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-bold text-brand-amberAccent">Adjusted:</span>
                   <span class="font-black" id="split-adj-m">--:--</span>
                 </div>
               </div>
@@ -948,19 +945,15 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Threshold Zone</span>
-                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">T-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded font-mono">T</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Target Dist:</span>
-                  <span class="font-bold text-slate-300" id="split-dist-t">1000m</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="text-slate-500">Baseline:</span>
                   <span class="font-bold text-slate-400" id="split-base-t">--:--</span>
                 </div>
                 <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
-                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-bold text-brand-amberAccent">Adjusted:</span>
                   <span class="font-black" id="split-adj-t">--:--</span>
                 </div>
               </div>
@@ -970,19 +963,15 @@
             <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-inner">
               <div class="flex justify-between items-center pb-2 border-b border-slate-800/50">
                 <span class="text-xs font-black text-white uppercase tracking-tight">Interval Zone</span>
-                <span class="text-[10px] font-black px-1.5 py-0.5 bg-brand-accent/10 text-brand-accent rounded border border-brand-accent/20 font-mono">I-PACE</span>
+                <span class="text-[10px] font-black px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded font-mono">I</span>
               </div>
               <div class="space-y-1.5 text-xs font-medium font-mono">
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Target Dist:</span>
-                  <span class="font-bold text-slate-300" id="split-dist-i">1000m</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-500">Baseline Lap:</span>
+                  <span class="text-slate-500">Baseline:</span>
                   <span class="font-bold text-slate-400" id="split-base-i">--:--</span>
                 </div>
                 <div class="flex justify-between bg-brand-amberAccent/10 text-brand-amberAccent px-2.5 py-1.5 rounded-lg border border-brand-amberAccent/20">
-                  <span class="font-bold text-brand-amberAccent">Adjusted Lap:</span>
+                  <span class="font-bold text-brand-amberAccent">Adjusted:</span>
                   <span class="font-black" id="split-adj-i">--:--</span>
                 </div>
               </div>
@@ -2208,14 +2197,13 @@
         const distFactor = splitDist / 1000; // split is relative to 1km
 
         const zonesKeys = [
-          { name: "Easy (E) Pace", distEl: "split-dist-e", baseEl: "split-base-e", adjEl: "split-adj-e" },
-          { name: "Marathon (M) Pace", distEl: "split-dist-m", baseEl: "split-base-m", adjEl: "split-adj-m" },
-          { name: "Threshold (T) Pace", distEl: "split-dist-t", baseEl: "split-base-t", adjEl: "split-adj-t" },
-          { name: "Interval (I) Pace", distEl: "split-dist-i", baseEl: "split-base-i", adjEl: "split-adj-i" }
+          { name: "Easy (E) Pace", baseEl: "split-base-e", adjEl: "split-adj-e" },
+          { name: "Marathon (M) Pace", baseEl: "split-base-m", adjEl: "split-adj-m" },
+          { name: "Threshold (T) Pace", baseEl: "split-base-t", adjEl: "split-adj-t" },
+          { name: "Interval (I) Pace", baseEl: "split-base-i", adjEl: "split-adj-i" }
         ];
 
         zonesKeys.forEach((key) => {
-          document.getElementById(key.distEl).textContent = splitDist === 1609.34 ? "1 Mile" : `${splitDist}m`;
           const paces = computedPaces[key.name];
           if (paces) {
             const baseAvgSplit = paces.baseAvg * distFactor;
@@ -2225,6 +2213,9 @@
             document.getElementById(key.adjEl).textContent = durationToFormattedTime(adjAvgSplit);
           }
         });
+
+        // Update shared distance display
+        document.getElementById('split-dist-display').textContent = splitDist === 1609.34 ? "1 Mile" : `${splitDist}m`;
 
         // Render D3 Pace Shift Chart and cache results for resize handler
         lastComputedPaces = computedPaces;
